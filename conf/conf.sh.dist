@@ -1,0 +1,9 @@
+#!/usr/bin/env bash
+
+#
+# CUSTOM
+#
+
+DB_WORLD_CUSTOM_PATHS+=(
+	$MOD_MORPHSUMMON_ROOT"/data/sql/db-world/"
+)
