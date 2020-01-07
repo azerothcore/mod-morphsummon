@@ -12,7 +12,7 @@ MorphSummon.Announce = 1
 
 MorphSummon.Warlock.Imp = "Imp Black,4449,Imp Jade,7552,Imp Red,10811,Outland Imp Red,16888,Outland Imp Purple,16889,Outland Imp Yellow,16890,Outland Imp White,16891"
 
-MorphSummon.Warlock.Voidwalker = "Voidwalker,1132,Outland Voidwalker Blue / Green Armor,16634,Outland Voidwalker Blue / Purple Armor,17081,Outland Voidwalker Blue / Blue Armor,17298,Outland Voidwalker Blue / Red Armor,18366,Outland Voidwalker Purple / Blue Armor,18953,Voidcaller Blue,17704,Voidcaller Purple,17746,Voidcaller Red,19884,Voidlord Purple / Purple Armor,16635,Voidlord Blue / Red Armor,18170,Voidlord Purple / Red Armor,18958,Voidlord Purple / Blue Armor,19883,Voidlord Red / Blue Armor,26214"
+MorphSummon.Warlock.Voidwalker = "Voidwalker,1132,Outland Voidwalker Blue / Green Armor,16634,Outland Voidwalker Blue / Purple Armor,17081,Outland Voidwalker Blue / Blue Armor,17298,Outland Voidwalker Blue / Red Armor,18366,Outland Voidwalker Purple / Blue Armor,18953,Voidcaller Blue,17704,Voidcaller Purple,17746,Voidcaller Red,19884,Voidlord Purple / Purple Armor,16635,Voidlord Blue / Red Armor,18170,Voidlord Purple / Red Armor,18958,Voidlord Purple / Blue Armor,19883,Voidlord Red / Blue Armor,26214,Voidwraith Purple,18050,Voidwraith Blue,18069,Voidwraith Red,18919"
 
 MorphSummon.Warlock.Succubus = "Succubus,4162,Succubus Magenta,159,Succubus Blue,2737,Succubus Red,10925"
 
