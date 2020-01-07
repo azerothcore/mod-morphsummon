@@ -67,6 +67,12 @@ mysql -P <DBport> -u <DPuser> --password=<DBpassword> world <modules/mod-morphsu
 If you need to change the module configuration, go to your server configuration folder (where your `worldserver` or `worldserver.exe` is), copy `morphsummon.conf.dist` to `morphsummon.conf` and edit that new file.
 
 
+## Screenshots
+![NPC](https://github.com/azerothcore/mod-morphsummon/master/images/morphsummon1.jpg "NPC")
+![Ghoul](https://github.com/azerothcore/mod-morphsummon/master/images/morphsummon2.jpg "Ghoul")
+![Felguard](https://github.com/azerothcore/mod-morphsummon/master/images/morphsummon3.jpg "Felguard")
+
+
 ## Credits
 
 * [Stoabrogga](https://github.com/Stoabrogga): author
