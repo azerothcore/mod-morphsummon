@@ -1,6 +1,9 @@
 # mod-morphsummon
 
-- Latest build status with azerothcore: [![Build Status](https://travis-ci.org/azerothcore/mod-morphsummon.svg?branch=master)](https://travis-ci.org/azerothcore/mod-morphsummon)
+![mod-morphsummon](https://raw.githubusercontent.com/azerothcore/mod-morphsummon/master/icon.png)
+
+
+Latest build status with azerothcore: [![Build Status](https://travis-ci.org/azerothcore/mod-morphsummon.svg?branch=master)](https://travis-ci.org/azerothcore/mod-morphsummon)
 
 
 ## Important notes
@@ -75,7 +78,7 @@ If you need to change the module configuration, go to your server configuration 
 
 ## Credits
 
-* [Stoabrogga](https://github.com/Stoabrogga): author
+[Stoabrogga](https://github.com/Stoabrogga): author
 
 AzerothCore: [repository](https://github.com/azerothcore) - [website](http://azerothcore.org/) - [discord chat community](https://discord.gg/gkt4y2x)
 
