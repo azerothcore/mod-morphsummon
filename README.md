@@ -68,9 +68,9 @@ If you need to change the module configuration, go to your server configuration 
 
 
 ## Screenshots
-![NPC](https://github.com/azerothcore/mod-morphsummon/master/images/morphsummon1.jpg "NPC")
-![Ghoul](https://github.com/azerothcore/mod-morphsummon/master/images/morphsummon2.jpg "Ghoul")
-![Felguard](https://github.com/azerothcore/mod-morphsummon/master/images/morphsummon3.jpg "Felguard")
+![NPC](https://raw.githubusercontent.com/azerothcore/mod-morphsummon/master/images/morphsummon1.jpg "NPC")
+![Ghoul](https://raw.githubusercontent.com/azerothcore/mod-morphsummon/master/images/morphsummon2.jpg "Ghoul")
+![Felguard](https://raw.githubusercontent.com/azerothcore/mod-morphsummon/master/images/morphsummon3.jpg "Felguard")
 
 
 ## Credits
