@@ -6,7 +6,7 @@
 
 # Announce the module when the player logs in?
 
-MorphSummon.Announce = 1
+MorphSummon.Announce = 0
 
 # Model IDs for the summoned permanent creatures
 
