@@ -81,6 +81,16 @@ public:
             ChatHandler(player->GetSession()).SendSysMessage("This server is running the |cff4CFF00MorphSummon |rmodule.");
         }
     }
+
+    void OnPetInitStatsForLevel(Pet* pet) override
+    {
+        if (pet->GetUInt32Value(UNIT_CREATED_BY_SPELL) == SUMMON_WATER_ELEMENTAL)
+        {
+            // The size of the water elemental model is not automatically scaled, so needs to be done here
+            CreatureDisplayInfoEntry const* displayInfo = sCreatureDisplayInfoStore.LookupEntry(pet->GetNativeDisplayId());
+            pet->SetObjectScale(0.85f / displayInfo->scale);
+        }
+    }
 };
 
 class MorphSummon_CreatureScript : public CreatureScript
@@ -304,6 +314,13 @@ private:
                 {
                     pet->SetDisplayId(action - MORPH_PAGE_MAX);
                     pet->SetNativeDisplayId(action - MORPH_PAGE_MAX);
+
+                    if (pet->GetUInt32Value(UNIT_CREATED_BY_SPELL) == SUMMON_WATER_ELEMENTAL)
+                    {
+                        // The size of the water elemental model is not automatically scaled, so needs to be done here
+                        CreatureDisplayInfoEntry const* displayInfo = sCreatureDisplayInfoStore.LookupEntry(pet->GetNativeDisplayId());
+                        pet->SetObjectScale(0.85f / displayInfo->scale);
+                    }
 
                     if (Aura* aura = pet->AddAura(SUBMERGE, pet))
                         aura->SetDuration(2000);
