@@ -10,7 +10,7 @@ Latest build status with azerothcore: [![Build Status](https://travis-ci.org/aze
 
 You have to use at least this AzerothCore commit:
 
-<https://github.com/azerothcore/azerothcore-wotlk/commit/e22d78ecd6997bc11f8620b759364f119dac431a>
+[dd81c21](https://github.com/azerothcore/azerothcore-wotlk/commit/dd81c219680db16172bfdfe4684f64a58a23eeb1)
 
 
 ## Description
@@ -74,6 +74,7 @@ If you need to change the module configuration, go to your server configuration 
 ![NPC](https://raw.githubusercontent.com/azerothcore/mod-morphsummon/master/images/morphsummon1.jpg "NPC")
 ![Ghoul](https://raw.githubusercontent.com/azerothcore/mod-morphsummon/master/images/morphsummon2.jpg "Ghoul")
 ![Felguard](https://raw.githubusercontent.com/azerothcore/mod-morphsummon/master/images/morphsummon3.jpg "Felguard")
+![Water Elemental](https://raw.githubusercontent.com/azerothcore/mod-morphsummon/master/images/morphsummon4.jpg "Water Elemental")
 
 
 ## Credits
