@@ -16,11 +16,17 @@ MorphSummon.Warlock.Voidwalker = "Voidwalker,1132,Outland Voidwalker Blue / Gree
 
 MorphSummon.Warlock.Succubus = "Succubus,4162,Succubus Magenta,159,Succubus Blue,2737,Succubus Red,10925"
 
+MorphSummon.Warlock.Felhunter = "Felhound,850,Magehunter Blue,24906,Magehunter Green,24907,Magehunter Red,24908,Hound Blue,3916,Hound Gray,6195,Hound Purple,7890,Hound Red,8180,Hound White,14312,Zergling,10993"
+
 MorphSummon.Warlock.Felguard = "Felguard Black,14255,Felguard Blue,5048,Felguard Yellow,5049,Felguard Red,18342,Felguard White,19901"
 
 MorphSummon.DeathKnight.Ghoul = "Northrend Ghoul White,24992,Northrend Ghoul Blue,24993,Northrend Ghoul Black,24994,Northrend Ghoul Red,24995,Ghoul Grey,137,Ghoul Red,414,Ghoul White,519,Ghoul Blue,547,Zombie Black (One-Armed),1196,Zombie Green (One-Armed),1197,Zombie Sea Green (One-Armed),1198,Zombie Black (Arrows),1200,Zombie Green (Arrows),1201,Zombie Sea Green (Arrows),1202,Zombie Sea Green (Sword),24707,Skeleton (Helmet),158,Skeleton Green (Helmet),201,Skeleton Dark Teal (Helmet),535,Skeleton White,7550,Skeleton Yellow,7555,Skeleton Blue,9783,Skeleton Red,9784,Skeleton Green,9785,Skeleton Black,9786,Skeleton (No Helmet),27355,Skeleton Dark Teal (No Helmet),27356,Skeleton Green (No Helmet),27357"
 
 MorphSummon.Mage.WaterElemental = "Water Elemental,525,Water Elemental Green,4907,Water Elemental Red,17045,Water Elemental Purple,27029"
+
+# List with alternative item IDs for the Felguard weapon
+
+MorphSummon.Warlock.Felguard.Weapon = "Axe (Default),22199,Sword 1,1899,Sword 2,10613,Sword 3,10614,Sword 4,12889,Sword 5,12902,Sword 6,13504,Mace 1,2809,Mace 2,5491,Mace 3,12950,Mace 4,30670,Axe 1,5287,Axe 2,14643,Axe 3,14870,Polearm 1,28365"
 
 # List with visual effect spells; the polymorph NPC will randomly choose one to cast after waiting between "minTimeVisualEffect" and "maxTimeVisualEffect" (values in milliseconds)
 
