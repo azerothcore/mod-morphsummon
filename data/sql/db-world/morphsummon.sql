@@ -28,6 +28,7 @@ DELETE FROM `gossip_menu_option` WHERE `MenuID` IN (@MENU_HELLO,@MENU_SORRY,@MEN
 INSERT INTO `gossip_menu_option` (`MenuID`, `OptionID`, `OptionIcon`, `OptionText`, `OptionBroadcastTextID`, `OptionType`, `OptionNpcFlag`, `ActionMenuID`, `ActionPoiID`, `BoxCoded`, `BoxMoney`, `BoxText`, `BoxBroadcastTextID`, `VerifiedBuild`)
 VALUES
 (@MENU_HELLO,0,0,'Choose polymorph',0,0,0,0,0,0,0,'',0,0),
+(@MENU_HELLO,1,0,'Choose Felguard weapon',0,0,0,0,0,0,0,'',0,0),
 (@MENU_SORRY,0,0,'Ah, nevermind.',0,0,0,0,0,0,0,'',0,0),
 (@MENU_CHOICE,0,0,'Back..',0,0,0,0,0,0,0,'',0,0),
 (@MENU_CHOICE,1,4,'Next..',0,0,0,0,0,0,0,'',0,0),

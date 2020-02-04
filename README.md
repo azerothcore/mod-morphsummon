@@ -8,14 +8,12 @@ Latest build status with azerothcore: [![Build Status](https://travis-ci.org/aze
 
 ## Important notes
 
-You have to use at least this AzerothCore commit:
-
-[dd81c21](https://github.com/azerothcore/azerothcore-wotlk/commit/dd81c219680db16172bfdfe4684f64a58a23eeb1)
+You have to use at least AzerothCore commit [3f0739f](https://github.com/azerothcore/azerothcore-wotlk/commit/3f0739f1c9a5289444ff9d62834b7ceb38879ba9).
 
 
 ## Description
 
-This module allows Warlocks, Death Knights and Mages to alter the appearance of their summoned permanent creatures. The appropriate model IDs can be specified in the configuration file.
+This module allows Warlocks, Death Knights and Mages to alter the appearance of their summoned permanent creatures (incl. the Felguard's weapon). The appropriate model / item IDs can be specified in the configuration file.
 
 
 ## How to use ingame
@@ -62,6 +60,7 @@ Without DB Assembler:
 ```
 cd <ACdir>
 mysql -P <DBport> -u <DPuser> --password=<DBpassword> world <modules/mod-morphsummon/data/sql/db-world/morphsummon.sql
+mysql -P <DBport> -u <DPuser> --password=<DBpassword> characters <modules/mod-morphsummon/data/sql/db-characters/morphsummon_ddl.sql
 ```
 
 
