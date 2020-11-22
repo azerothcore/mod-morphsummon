@@ -1,9 +1,10 @@
-# mod-morphsummon
+# ![logo](https://raw.githubusercontent.com/azerothcore/azerothcore.github.io/master/images/logo-github.png) AzerothCore
+## mod-morphsummon
 
 ![mod-morphsummon](https://raw.githubusercontent.com/azerothcore/mod-morphsummon/master/icon.png)
 
 
-Latest build status with azerothcore: [![Build Status](https://travis-ci.org/azerothcore/mod-morphsummon.svg?branch=master)](https://travis-ci.org/azerothcore/mod-morphsummon)
+- Latest build status with azerothcore: [![Build Status](https://github.com/azerothcore/mod-morphsummon/workflows/core-build/badge.svg?branch=master&event=push)](https://github.com/azerothcore/mod-morphsummon)
 
 
 ## Important notes
