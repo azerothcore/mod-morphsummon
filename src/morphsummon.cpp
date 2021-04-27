@@ -100,7 +100,7 @@ public:
             }
             else if (pet->GetUInt32Value(UNIT_CREATED_BY_SPELL) == SUMMON_FELGUARD)
             {
-                if (QueryResult result = CharacterDatabase.PQuery("SELECT `FelguardItemID` FROM `mod_morphsummon_felguard_weapon` WHERE `PlayerGUIDLow` = %u", player->GetGUIDLow()))
+                if (QueryResult result = CharacterDatabase.PQuery("SELECT `FelguardItemID` FROM `mod_morphsummon_felguard_weapon` WHERE `PlayerGUIDLow` = %u", player->GetGUID().GetCounter()))
                 {
                     Field* fields = result->Fetch();
                     pet->SetUInt32Value(UNIT_VIRTUAL_ITEM_SLOT_ID, fields[0].GetUInt32());
@@ -383,7 +383,7 @@ private:
                     else
                     {
                         pet->SetUInt32Value(UNIT_VIRTUAL_ITEM_SLOT_ID, morphId);
-                        CharacterDatabase.PExecute("REPLACE INTO `mod_morphsummon_felguard_weapon` (`PlayerGUIDLow`, `FelguardItemID`) VALUES (%u, %u)", player->GetGUIDLow(), morphId);
+                        CharacterDatabase.PExecute("REPLACE INTO `mod_morphsummon_felguard_weapon` (`PlayerGUIDLow`, `FelguardItemID`) VALUES (%u, %u)", player->GetGUID().GetCounter(), morphId);
                     }
                 }
             }
