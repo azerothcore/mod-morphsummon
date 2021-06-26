@@ -216,7 +216,7 @@ public:
         {
             if (!randomMainHandEquip.empty())
             {
-                SetEquipmentSlots(false, acore::Containers::SelectRandomContainerElement(randomMainHandEquip), EQUIP_UNEQUIP, EQUIP_UNEQUIP);
+                SetEquipmentSlots(false, Acore::Containers::SelectRandomContainerElement(randomMainHandEquip), EQUIP_UNEQUIP, EQUIP_UNEQUIP);
                 me->SetSheath(SHEATH_STATE_MELEE);
             }
             else
@@ -237,7 +237,7 @@ public:
             {
                 case MORPH_EVENT_CAST_SPELL:
                     if (!randomVisualEffectSpells.empty())
-                        DoCast(me, acore::Containers::SelectRandomContainerElement(randomVisualEffectSpells), true);
+                        DoCast(me, Acore::Containers::SelectRandomContainerElement(randomVisualEffectSpells), true);
                     events.ScheduleEvent(MORPH_EVENT_CAST_SPELL, urand(minTimeVisualEffect, maxTimeVisualEffect));
                     break;
             }
