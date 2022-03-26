@@ -129,12 +129,14 @@ public:
         {
             return CreateMainMenu(player, creature);
         }
-        else if (action == MORPH_CLOSE_MENU)
+
+        if (action == MORPH_CLOSE_MENU)
         {
             CloseGossipMenuFor(player);
             return true;
         }
-        else if (action >= MORPH_PAGE_START_WARLOCK_IMP && action < MORPH_PAGE_START_WARLOCK_VOIDWALKER)
+
+        if (action >= MORPH_PAGE_START_WARLOCK_IMP && action < MORPH_PAGE_START_WARLOCK_VOIDWALKER)
         {
             AddGossip(player, action, warlock_imp, MORPH_PAGE_START_WARLOCK_IMP);
         }
