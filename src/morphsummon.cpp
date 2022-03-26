@@ -1,9 +1,10 @@
 /*
  * Copyright (C) 2016+ AzerothCore <www.azerothcore.org>, released under GNU AGPL v3 license: https://github.com/azerothcore/azerothcore-wotlk/blob/master/LICENSE-AGPL3
-*/
+ */
 
 #include "ScriptMgr.h"
 #include "Player.h"
+#include "Unit.h"
 #include "Chat.h"
 #include "Config.h"
 #include "Pet.h"
@@ -27,60 +28,60 @@ bool morphSummonAnnounce;
 
 enum MorphSummonGossip
 {
-    MORPH_PAGE_SIZE                       =     13,
-    MORPH_PAGE_START_WARLOCK_IMP          =    101,
-    MORPH_PAGE_START_WARLOCK_VOIDWALKER   =    201,
-    MORPH_PAGE_START_WARLOCK_SUCCUBUS     =    301,
-    MORPH_PAGE_START_WARLOCK_FELHUNTER    =    401,
-    MORPH_PAGE_START_WARLOCK_FELGUARD     =    501,
-    MORPH_PAGE_START_DEATH_KNIGHT_GHOUL   =    601,
-    MORPH_PAGE_START_MAGE_WATER_ELEMENTAL =    701,
-    MORPH_PAGE_START_FELGUARD_WEAPON      =    801,
-    MORPH_PAGE_MAX                        =    901,
-    MORPH_MAIN_MENU                       =     50,
-    MORPH_CLOSE_MENU                      =     60,
-    MORPH_GOSSIP_TEXT_HELLO               = 601072,
-    MORPH_GOSSIP_TEXT_SORRY               = 601073,
-    MORPH_GOSSIP_TEXT_CHOICE              = 601074,
-    MORPH_GOSSIP_MENU_HELLO               =  61072,
-    MORPH_GOSSIP_MENU_SORRY               =  61073,
-    MORPH_GOSSIP_MENU_CHOICE              =  61074,
-    MORPH_GOSSIP_OPTION_POLYMORPH         =      0,
-    MORPH_GOSSIP_OPTION_FELGUARD_WEAPON   =      1,
-    MORPH_GOSSIP_OPTION_SORRY             =      0,
-    MORPH_GOSSIP_OPTION_CHOICE_BACK       =      0,
-    MORPH_GOSSIP_OPTION_CHOICE_NEXT       =      1,
-    MORPH_GOSSIP_OPTION_CHOICE_PREVIOUS   =      2
+    MORPH_PAGE_SIZE = 13,
+    MORPH_PAGE_START_WARLOCK_IMP = 101,
+    MORPH_PAGE_START_WARLOCK_VOIDWALKER = 201,
+    MORPH_PAGE_START_WARLOCK_SUCCUBUS = 301,
+    MORPH_PAGE_START_WARLOCK_FELHUNTER = 401,
+    MORPH_PAGE_START_WARLOCK_FELGUARD = 501,
+    MORPH_PAGE_START_DEATH_KNIGHT_GHOUL = 601,
+    MORPH_PAGE_START_MAGE_WATER_ELEMENTAL = 701,
+    MORPH_PAGE_START_FELGUARD_WEAPON = 801,
+    MORPH_PAGE_MAX = 901,
+    MORPH_MAIN_MENU = 50,
+    MORPH_CLOSE_MENU = 60,
+    MORPH_GOSSIP_TEXT_HELLO = 601072,
+    MORPH_GOSSIP_TEXT_SORRY = 601073,
+    MORPH_GOSSIP_TEXT_CHOICE = 601074,
+    MORPH_GOSSIP_MENU_HELLO = 61072,
+    MORPH_GOSSIP_MENU_SORRY = 61073,
+    MORPH_GOSSIP_MENU_CHOICE = 61074,
+    MORPH_GOSSIP_OPTION_POLYMORPH = 0,
+    MORPH_GOSSIP_OPTION_FELGUARD_WEAPON = 1,
+    MORPH_GOSSIP_OPTION_SORRY = 0,
+    MORPH_GOSSIP_OPTION_CHOICE_BACK = 0,
+    MORPH_GOSSIP_OPTION_CHOICE_NEXT = 1,
+    MORPH_GOSSIP_OPTION_CHOICE_PREVIOUS = 2
 };
 
 enum MorphSummonSpells
 {
-    SUMMON_IMP                            =    688,
-    SUMMON_VOIDWALKER                     =    697,
-    SUMMON_SUCCUBUS                       =    712,
-    SUMMON_FELHUNTER                      =    691,
-    SUMMON_FELGUARD                       =  30146,
-    RAISE_DEAD                            =  52150,
-    SUMMON_WATER_ELEMENTAL                =  70908
+    SUMMON_IMP = 688,
+    SUMMON_VOIDWALKER = 697,
+    SUMMON_SUCCUBUS = 712,
+    SUMMON_FELHUNTER = 691,
+    SUMMON_FELGUARD = 30146,
+    RAISE_DEAD = 52150,
+    SUMMON_WATER_ELEMENTAL = 70907
 };
 
 enum MorphEffectSpells
 {
-    SUBMERGE                              =  53421,
-    SHADOW_SUMMON_VISUAL                  =  53708
+    SUBMERGE = 53421,
+    SHADOW_SUMMON_VISUAL = 53708
 };
 
 enum MorphSummonEvents
 {
-    MORPH_EVENT_CAST_SPELL                =      1
+    MORPH_EVENT_CAST_SPELL = 1
 };
 
 class MorphSummon_PlayerScript : public PlayerScript
 {
 public:
-    MorphSummon_PlayerScript() : PlayerScript("MorphSummon_PlayerScript") { }
+    MorphSummon_PlayerScript() : PlayerScript("MorphSummon_PlayerScript") {}
 
-    void OnLogin(Player* player) override
+    void OnLogin(Player *player) override
     {
         if (morphSummonAnnounce)
         {
@@ -88,22 +89,22 @@ public:
         }
     }
 
-    void OnAfterGuardianInitStatsForLevel(Player* player, Guardian* guardian) override
+    void OnAfterGuardianInitStatsForLevel(Player *player, Guardian *guardian) override
     {
-        if (Pet* pet = guardian->ToPet())
+        if (Pet *pet = guardian->ToPet())
         {
             if (pet->GetUInt32Value(UNIT_CREATED_BY_SPELL) == SUMMON_WATER_ELEMENTAL)
             {
                 // The size of the water elemental model is not automatically scaled, so needs to be done here
-                CreatureDisplayInfoEntry const* displayInfo = sCreatureDisplayInfoStore.LookupEntry(pet->GetNativeDisplayId());
+                CreatureDisplayInfoEntry const *displayInfo = sCreatureDisplayInfoStore.LookupEntry(pet->GetNativeDisplayId());
                 pet->SetObjectScale(0.85f / displayInfo->scale);
             }
             else if (pet->GetUInt32Value(UNIT_CREATED_BY_SPELL) == SUMMON_FELGUARD)
             {
-                if (QueryResult result = CharacterDatabase.PQuery("SELECT `FelguardItemID` FROM `mod_morphsummon_felguard_weapon` WHERE `PlayerGUIDLow` = %u", player->GetGUID().GetCounter()))
+                if (QueryResult result = CharacterDatabase.Query("SELECT `FelguardItemID` FROM `mod_morphsummon_felguard_weapon` WHERE `PlayerGUIDLow` = %u", player->GetGUID().GetCounter()))
                 {
-                    Field* fields = result->Fetch();
-                    pet->SetUInt32Value(UNIT_VIRTUAL_ITEM_SLOT_ID, fields[0].GetUInt32());
+                    Field *fields = result->Fetch();
+                    pet->SetUInt32Value(UNIT_VIRTUAL_ITEM_SLOT_ID, fields[0].Get<uint32>());
                 }
             }
         }
@@ -113,14 +114,14 @@ public:
 class MorphSummon_CreatureScript : public CreatureScript
 {
 public:
-    MorphSummon_CreatureScript() : CreatureScript("npc_morphsummon") { }
+    MorphSummon_CreatureScript() : CreatureScript("npc_morphsummon") {}
 
-    bool OnGossipHello(Player* player, Creature* creature) override
+    bool OnGossipHello(Player *player, Creature *creature) override
     {
         return CreateMainMenu(player, creature);
     }
 
-    bool OnGossipSelect(Player* player, Creature* creature, uint32 sender, uint32 action) override
+    bool OnGossipSelect(Player *player, Creature *creature, uint32 sender, uint32 action) override
     {
         ClearGossipMenuFor(player);
 
@@ -128,12 +129,14 @@ public:
         {
             return CreateMainMenu(player, creature);
         }
-        else if (action == MORPH_CLOSE_MENU)
+
+        if (action == MORPH_CLOSE_MENU)
         {
             CloseGossipMenuFor(player);
             return true;
         }
-        else if (action >= MORPH_PAGE_START_WARLOCK_IMP && action < MORPH_PAGE_START_WARLOCK_VOIDWALKER)
+
+        if (action >= MORPH_PAGE_START_WARLOCK_IMP && action < MORPH_PAGE_START_WARLOCK_VOIDWALKER)
         {
             AddGossip(player, action, warlock_imp, MORPH_PAGE_START_WARLOCK_IMP);
         }
@@ -208,7 +211,7 @@ public:
 
     struct npc_morphsummonAI : public ScriptedAI
     {
-        npc_morphsummonAI(Creature* creature) : ScriptedAI(creature) { }
+        npc_morphsummonAI(Creature *creature) : ScriptedAI(creature) {}
 
         EventMap events;
 
@@ -235,29 +238,42 @@ public:
 
             switch (events.ExecuteEvent())
             {
-                case MORPH_EVENT_CAST_SPELL:
-                    if (!randomVisualEffectSpells.empty())
-                        DoCast(me, Acore::Containers::SelectRandomContainerElement(randomVisualEffectSpells), true);
-                    events.ScheduleEvent(MORPH_EVENT_CAST_SPELL, urand(minTimeVisualEffect, maxTimeVisualEffect));
-                    break;
+            case MORPH_EVENT_CAST_SPELL:
+                if (!randomVisualEffectSpells.empty())
+                    DoCast(me, Acore::Containers::SelectRandomContainerElement(randomVisualEffectSpells), true);
+                events.ScheduleEvent(MORPH_EVENT_CAST_SPELL, urand(minTimeVisualEffect, maxTimeVisualEffect));
+                break;
             }
         }
     };
 
-    CreatureAI* GetAI(Creature* creature) const override
+    CreatureAI *GetAI(Creature *creature) const override
     {
         return new npc_morphsummonAI(creature);
     }
 
 private:
-    bool CreateMainMenu(Player* player, Creature* creature)
+    bool CreateMainMenu(Player *player, Creature *creature)
     {
         bool sorry = false;
 
-        if (Pet* pet = player->GetPet())
+        // Mage Pet (minion)
+        if (Minion *minion = player->GetFirstMinion())
         {
-            switch (pet->GetUInt32Value(UNIT_CREATED_BY_SPELL))
+            if (minion->GetUInt32Value(UNIT_CREATED_BY_SPELL) == SUMMON_WATER_ELEMENTAL)
             {
+                if (!mage_water_elemental.empty())
+                {
+                    AddGossipItemFor(player, MORPH_GOSSIP_MENU_HELLO, MORPH_GOSSIP_OPTION_POLYMORPH, GOSSIP_SENDER_MAIN, MORPH_PAGE_START_MAGE_WATER_ELEMENTAL);
+                }
+            }
+        }
+        else
+        {
+            if (Pet *pet = player->GetPet())
+            {
+                switch (pet->GetUInt32Value(UNIT_CREATED_BY_SPELL))
+                {
                 case SUMMON_IMP:
                     if (!warlock_imp.empty())
                         AddGossipItemFor(player, MORPH_GOSSIP_MENU_HELLO, MORPH_GOSSIP_OPTION_POLYMORPH, GOSSIP_SENDER_MAIN, MORPH_PAGE_START_WARLOCK_IMP);
@@ -305,19 +321,14 @@ private:
                     else
                         sorry = true;
                     break;
-                case SUMMON_WATER_ELEMENTAL:
-                    if (!mage_water_elemental.empty())
-                        AddGossipItemFor(player, MORPH_GOSSIP_MENU_HELLO, MORPH_GOSSIP_OPTION_POLYMORPH, GOSSIP_SENDER_MAIN, MORPH_PAGE_START_MAGE_WATER_ELEMENTAL);
-                    else
-                        sorry = true;
-                    break;
                 default:
                     sorry = true;
+                }
             }
-        }
-        else
-        {
-            sorry = true;
+            else
+            {
+                sorry = true;
+            }
         }
 
         if (sorry)
@@ -354,36 +365,49 @@ private:
         }
     }
 
-    void Polymorph(Player* player, uint32 action, uint32 sender, uint32 startPage, uint32 maxPage, uint32 spell, std::map<std::string, uint32> &modelMap, bool polymorphPet)
+    void Polymorph(Player *player, uint32 action, uint32 sender, uint32 startPage, uint32 maxPage, uint32 spell, std::map<std::string, uint32> &modelMap, bool polymorphPet)
     {
-        if (Pet* pet = player->GetPet())
+        Creature *petOrMinion = nullptr;
+        Pet *pet = player->GetPet();
+        Minion *minion = player->GetFirstMinion();
+
+        if (pet != nullptr)
+        {
+            petOrMinion = pet;
+        }
+        else if (minion != nullptr)
+        {
+            petOrMinion = minion;
+        }
+
+        if (petOrMinion != nullptr)
         {
             if (sender >= startPage && sender < maxPage)
             {
-                if (pet->GetUInt32Value(UNIT_CREATED_BY_SPELL) == spell)
+                if (petOrMinion->GetUInt32Value(UNIT_CREATED_BY_SPELL) == spell)
                 {
                     uint32 morphId = action - MORPH_PAGE_MAX;
 
                     if (polymorphPet)
                     {
-                        pet->SetDisplayId(morphId);
-                        pet->SetNativeDisplayId(morphId);
+                        petOrMinion->SetDisplayId(morphId);
+                        petOrMinion->SetNativeDisplayId(morphId);
 
-                        if (pet->GetUInt32Value(UNIT_CREATED_BY_SPELL) == SUMMON_WATER_ELEMENTAL)
+                        if (petOrMinion->GetUInt32Value(UNIT_CREATED_BY_SPELL) == SUMMON_WATER_ELEMENTAL)
                         {
                             // The size of the water elemental model is not automatically scaled, so needs to be done here
-                            CreatureDisplayInfoEntry const* displayInfo = sCreatureDisplayInfoStore.LookupEntry(pet->GetNativeDisplayId());
-                            pet->SetObjectScale(0.85f / displayInfo->scale);
+                            CreatureDisplayInfoEntry const *displayInfo = sCreatureDisplayInfoStore.LookupEntry(petOrMinion->GetNativeDisplayId());
+                            petOrMinion->SetObjectScale(0.85f / displayInfo->scale);
                         }
 
-                        if (Aura* aura = pet->AddAura(SUBMERGE, pet))
+                        if (Aura *aura = petOrMinion->AddAura(SUBMERGE, pet))
                             aura->SetDuration(2000);
-                        pet->CastSpell(pet, SHADOW_SUMMON_VISUAL, true);
+                        petOrMinion->CastSpell(pet, SHADOW_SUMMON_VISUAL, true);
                     }
                     else
                     {
-                        pet->SetUInt32Value(UNIT_VIRTUAL_ITEM_SLOT_ID, morphId);
-                        CharacterDatabase.PExecute("REPLACE INTO `mod_morphsummon_felguard_weapon` (`PlayerGUIDLow`, `FelguardItemID`) VALUES (%u, %u)", player->GetGUID().GetCounter(), morphId);
+                        petOrMinion->SetUInt32Value(UNIT_VIRTUAL_ITEM_SLOT_ID, morphId);
+                        CharacterDatabase.Execute("REPLACE INTO `mod_morphsummon_felguard_weapon` (`PlayerGUIDLow`, `FelguardItemID`) VALUES (%u, %u)", player->GetGUID().GetCounter(), morphId);
                     }
                 }
             }
@@ -396,16 +420,16 @@ private:
 class MorphSummon_WorldScript : public WorldScript
 {
 public:
-    MorphSummon_WorldScript() : WorldScript("MorphSummon_WorldScript") { }
+    MorphSummon_WorldScript() : WorldScript("MorphSummon_WorldScript") {}
 
     void OnBeforeConfigLoad(bool /*reload*/) override
     {
-        morphSummonAnnounce = sConfigMgr->GetBoolDefault("MorphSummon.Announce", true);
+        morphSummonAnnounce = sConfigMgr->GetOption<bool>("MorphSummon.Announce", true);
 
         randomVisualEffectSpells.clear();
         std::stringstream stringStream;
         std::string delimitedValue;
-        stringStream.str(sConfigMgr->GetStringDefault("MorphSummon.RandomVisualEffectSpells", "45959,50772"));
+        stringStream.str(sConfigMgr->GetOption<std::string>("MorphSummon.RandomVisualEffectSpells", "45959,50772"));
 
         while (std::getline(stringStream, delimitedValue, ','))
         {
@@ -415,7 +439,7 @@ public:
 
         randomMainHandEquip.clear();
         stringStream.clear();
-        stringStream.str(sConfigMgr->GetStringDefault("MorphSummon.RandomMainHandEquip", "28658,32374"));
+        stringStream.str(sConfigMgr->GetOption<std::string>("MorphSummon.RandomMainHandEquip", "28658,32374"));
 
         while (std::getline(stringStream, delimitedValue, ','))
         {
@@ -423,8 +447,8 @@ public:
             randomMainHandEquip.push_back(itemId);
         }
 
-        minTimeVisualEffect = sConfigMgr->GetIntDefault("MorphSummon.MinTimeVisualEffect", 30000);
-        maxTimeVisualEffect = sConfigMgr->GetIntDefault("MorphSummon.MaxTimeVisualEffect", 90000);
+        minTimeVisualEffect = sConfigMgr->GetOption<int>("MorphSummon.MinTimeVisualEffect", 30000);
+        maxTimeVisualEffect = sConfigMgr->GetOption<int>("MorphSummon.MaxTimeVisualEffect", 90000);
 
         warlock_imp.clear();
         warlock_voidwalker.clear();
@@ -435,14 +459,14 @@ public:
         death_knight_ghoul.clear();
         mage_water_elemental.clear();
 
-        LoadModels(sConfigMgr->GetStringDefault("MorphSummon.Warlock.Imp", ""), warlock_imp);
-        LoadModels(sConfigMgr->GetStringDefault("MorphSummon.Warlock.Voidwalker", ""), warlock_voidwalker);
-        LoadModels(sConfigMgr->GetStringDefault("MorphSummon.Warlock.Succubus", ""), warlock_succubus);
-        LoadModels(sConfigMgr->GetStringDefault("MorphSummon.Warlock.Felhunter", ""), warlock_felhunter);
-        LoadModels(sConfigMgr->GetStringDefault("MorphSummon.Warlock.Felguard", ""), warlock_felguard);
-        LoadModels(sConfigMgr->GetStringDefault("MorphSummon.Warlock.Felguard.Weapon", ""), felguard_weapon);
-        LoadModels(sConfigMgr->GetStringDefault("MorphSummon.DeathKnight.Ghoul", ""), death_knight_ghoul);
-        LoadModels(sConfigMgr->GetStringDefault("MorphSummon.Mage.WaterElemental", ""), mage_water_elemental);
+        LoadModels(sConfigMgr->GetOption<std::string>("MorphSummon.Warlock.Imp", ""), warlock_imp);
+        LoadModels(sConfigMgr->GetOption<std::string>("MorphSummon.Warlock.Voidwalker", ""), warlock_voidwalker);
+        LoadModels(sConfigMgr->GetOption<std::string>("MorphSummon.Warlock.Succubus", ""), warlock_succubus);
+        LoadModels(sConfigMgr->GetOption<std::string>("MorphSummon.Warlock.Felhunter", ""), warlock_felhunter);
+        LoadModels(sConfigMgr->GetOption<std::string>("MorphSummon.Warlock.Felguard", ""), warlock_felguard);
+        LoadModels(sConfigMgr->GetOption<std::string>("MorphSummon.Warlock.Felguard.Weapon", ""), felguard_weapon);
+        LoadModels(sConfigMgr->GetOption<std::string>("MorphSummon.DeathKnight.Ghoul", ""), death_knight_ghoul);
+        LoadModels(sConfigMgr->GetOption<std::string>("MorphSummon.Mage.WaterElemental", ""), mage_water_elemental);
     }
 
 private:
