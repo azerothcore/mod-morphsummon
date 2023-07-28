@@ -2,6 +2,8 @@
 
 ## mod-morphsummon
 
+![mod-morphsummon](https://raw.githubusercontent.com/azerothcore/mod-morphsummon/master/icon.png)
+
 - Latest build status with azerothcore:
 
 [![Build Status](https://github.com/azerothcore/mod-morphsummon/workflows/core-build/badge.svg?branch=master&event=push)](https://github.com/azerothcore/mod-morphsummon)
@@ -42,6 +44,12 @@ git clone https://github.com/azerothcore/mod-morphsummon.git -b master
 ## Edit module configuration (optional)
 
 If you need to change the module configuration, go to your server configuration folder (where your `worldserver` or `worldserver.exe` is), copy `morphsummon.conf.dist` to `morphsummon.conf` and edit that new file.
+
+## Screenshots
+![NPC](https://raw.githubusercontent.com/azerothcore/mod-morphsummon/master/images/morphsummon1.jpg "NPC")
+![Ghoul](https://raw.githubusercontent.com/azerothcore/mod-morphsummon/master/images/morphsummon2.jpg "Ghoul")
+![Felguard](https://raw.githubusercontent.com/azerothcore/mod-morphsummon/master/images/morphsummon3.jpg "Felguard")
+![Water Elemental](https://raw.githubusercontent.com/azerothcore/mod-morphsummon/master/images/morphsummon4.jpg "Water Elemental")
 
 ## Credits
 
