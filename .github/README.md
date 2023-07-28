@@ -1,0 +1,53 @@
+# ![logo](https://raw.githubusercontent.com/azerothcore/azerothcore.github.io/master/images/logo-github.png) AzerothCore
+
+## mod-morphsummon
+
+- Latest build status with azerothcore:
+
+[![Build Status](https://github.com/azerothcore/mod-morphsummon/workflows/core-build/badge.svg?branch=master&event=push)](https://github.com/azerothcore/mod-morphsummon)
+
+## Important notes
+
+You have to use at least AzerothCore commit [3f0739f](https://github.com/azerothcore/azerothcore-wotlk/commit/3f0739f1c9a5289444ff9d62834b7ceb38879ba9).
+
+## Description
+
+This module allows Warlocks, Death Knights and Mages to alter the appearance of their summoned permanent creatures (incl. the Felguard's weapon). The appropriate model / item IDs can be specified in the configuration file.
+
+## How to use ingame
+
+As GM:
+
+- add NPC permanently:
+
+```
+.npc add 601072
+```
+
+- add NPC temporarily:
+
+```
+.npc add temp 601072
+```
+
+## Installation
+
+Clone Git repository:
+
+```
+cd modules
+git clone https://github.com/azerothcore/mod-morphsummon.git -b master
+```
+
+## Edit module configuration (optional)
+
+If you need to change the module configuration, go to your server configuration folder (where your `worldserver` or `worldserver.exe` is), copy `morphsummon.conf.dist` to `morphsummon.conf` and edit that new file.
+
+## Credits
+
+[Stoabrogga](https://github.com/Stoabrogga): author
+
+AzerothCore: [repository](https://github.com/azerothcore) - [website](http://azerothcore.org/) - [discord chat community](https://discord.gg/gkt4y2x)
+
+## License
+This code and content is released under the [GNU AGPL v3](https://github.com/azerothcore/azerothcore-wotlk/blob/master/LICENSE-AGPL3).

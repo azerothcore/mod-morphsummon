@@ -76,12 +76,12 @@ enum MorphSummonEvents
     MORPH_EVENT_CAST_SPELL = 1
 };
 
-class MorphSummon_PlayerScript : public PlayerScript
+class MorphSummonPlayerScript : public PlayerScript
 {
 public:
-    MorphSummon_PlayerScript() : PlayerScript("MorphSummon_PlayerScript") {}
+    MorphSummonPlayerScript() : PlayerScript("MorphSummonPlayerScript") {}
 
-    void OnLogin(Player *player) override
+    void OnLogin(Player* player) override
     {
         if (morphSummonAnnounce)
         {
@@ -89,21 +89,21 @@ public:
         }
     }
 
-    void OnAfterGuardianInitStatsForLevel(Player *player, Guardian *guardian) override
+    void OnAfterGuardianInitStatsForLevel(Player* player, Guardian* guardian) override
     {
-        if (Pet *pet = guardian->ToPet())
+        if (Pet* pet = guardian->ToPet())
         {
             if (pet->GetUInt32Value(UNIT_CREATED_BY_SPELL) == SUMMON_WATER_ELEMENTAL)
             {
                 // The size of the water elemental model is not automatically scaled, so needs to be done here
-                CreatureDisplayInfoEntry const *displayInfo = sCreatureDisplayInfoStore.LookupEntry(pet->GetNativeDisplayId());
+                CreatureDisplayInfoEntry const* displayInfo = sCreatureDisplayInfoStore.LookupEntry(pet->GetNativeDisplayId());
                 pet->SetObjectScale(0.85f / displayInfo->scale);
             }
             else if (pet->GetUInt32Value(UNIT_CREATED_BY_SPELL) == SUMMON_FELGUARD)
             {
-                if (QueryResult result = CharacterDatabase.Query("SELECT `FelguardItemID` FROM `mod_morphsummon_felguard_weapon` WHERE `PlayerGUIDLow` = %u", player->GetGUID().GetCounter()))
+                if (QueryResult result = CharacterDatabase.Query("SELECT `FelguardItemID` FROM `mod_morphsummon_felguard_weapon` WHERE `PlayerGUIDLow`={}", player->GetGUID().GetCounter()))
                 {
-                    Field *fields = result->Fetch();
+                    Field* fields = result->Fetch();
                     pet->SetUInt32Value(UNIT_VIRTUAL_ITEM_SLOT_ID, fields[0].Get<uint32>());
                 }
             }
@@ -111,17 +111,17 @@ public:
     }
 };
 
-class MorphSummon_CreatureScript : public CreatureScript
+class MorphSummonCreatureScript : public CreatureScript
 {
 public:
-    MorphSummon_CreatureScript() : CreatureScript("npc_morphsummon") {}
+    MorphSummonCreatureScript() : CreatureScript("npc_morphsummon") {}
 
-    bool OnGossipHello(Player *player, Creature *creature) override
+    bool OnGossipHello(Player* player, Creature* creature) override
     {
         return CreateMainMenu(player, creature);
     }
 
-    bool OnGossipSelect(Player *player, Creature *creature, uint32 sender, uint32 action) override
+    bool OnGossipSelect(Player* player, Creature* creature, uint32 sender, uint32 action) override
     {
         ClearGossipMenuFor(player);
 
@@ -211,7 +211,7 @@ public:
 
     struct npc_morphsummonAI : public ScriptedAI
     {
-        npc_morphsummonAI(Creature *creature) : ScriptedAI(creature) {}
+        npc_morphsummonAI(Creature* creature) : ScriptedAI(creature) {}
 
         EventMap events;
 
@@ -247,18 +247,18 @@ public:
         }
     };
 
-    CreatureAI *GetAI(Creature *creature) const override
+    CreatureAI* GetAI(Creature* creature) const override
     {
         return new npc_morphsummonAI(creature);
     }
 
 private:
-    bool CreateMainMenu(Player *player, Creature *creature)
+    bool CreateMainMenu(Player* player, Creature* creature)
     {
         bool sorry = false;
 
         // Mage Pet (minion)
-        if (Minion *minion = player->GetFirstMinion())
+        if (Minion* minion = player->GetFirstMinion())
         {
             if (minion->GetUInt32Value(UNIT_CREATED_BY_SPELL) == SUMMON_WATER_ELEMENTAL)
             {
@@ -270,7 +270,7 @@ private:
         }
         else
         {
-            if (Pet *pet = player->GetPet())
+            if (Pet* pet = player->GetPet())
             {
                 switch (pet->GetUInt32Value(UNIT_CREATED_BY_SPELL))
                 {
@@ -342,7 +342,7 @@ private:
         return true;
     }
 
-    void AddGossip(Player *player, uint32 action, std::map<std::string, uint32> &modelMap, uint32 pageStart)
+    void AddGossip(Player* player, uint32 action, std::map<std::string, uint32> &modelMap, uint32 pageStart)
     {
         AddGossipItemFor(player, MORPH_GOSSIP_MENU_CHOICE, MORPH_GOSSIP_OPTION_CHOICE_BACK, GOSSIP_SENDER_MAIN, MORPH_MAIN_MENU);
         uint32 page = action - pageStart + 1;
@@ -367,9 +367,9 @@ private:
 
     void Polymorph(Player *player, uint32 action, uint32 sender, uint32 startPage, uint32 maxPage, uint32 spell, std::map<std::string, uint32> &modelMap, bool polymorphPet)
     {
-        Creature *petOrMinion = nullptr;
-        Pet *pet = player->GetPet();
-        Minion *minion = player->GetFirstMinion();
+        Creature* petOrMinion = nullptr;
+        Pet* pet = player->GetPet();
+        Minion* minion = player->GetFirstMinion();
 
         if (pet != nullptr)
         {
@@ -396,7 +396,7 @@ private:
                         if (petOrMinion->GetUInt32Value(UNIT_CREATED_BY_SPELL) == SUMMON_WATER_ELEMENTAL)
                         {
                             // The size of the water elemental model is not automatically scaled, so needs to be done here
-                            CreatureDisplayInfoEntry const *displayInfo = sCreatureDisplayInfoStore.LookupEntry(petOrMinion->GetNativeDisplayId());
+                            CreatureDisplayInfoEntry const* displayInfo = sCreatureDisplayInfoStore.LookupEntry(petOrMinion->GetNativeDisplayId());
                             petOrMinion->SetObjectScale(0.85f / displayInfo->scale);
                         }
 
@@ -407,7 +407,7 @@ private:
                     else
                     {
                         petOrMinion->SetUInt32Value(UNIT_VIRTUAL_ITEM_SLOT_ID, morphId);
-                        CharacterDatabase.Execute("REPLACE INTO `mod_morphsummon_felguard_weapon` (`PlayerGUIDLow`, `FelguardItemID`) VALUES (%u, %u)", player->GetGUID().GetCounter(), morphId);
+                        CharacterDatabase.Execute("REPLACE INTO `mod_morphsummon_felguard_weapon` (`PlayerGUIDLow`, `FelguardItemID`) VALUES ({}, {})", player->GetGUID().GetCounter(), morphId);
                     }
                 }
             }
@@ -417,10 +417,10 @@ private:
     }
 };
 
-class MorphSummon_WorldScript : public WorldScript
+class MorphSummonWorldScript : public WorldScript
 {
 public:
-    MorphSummon_WorldScript() : WorldScript("MorphSummon_WorldScript") {}
+    MorphSummonWorldScript() : WorldScript("MorphSummonWorldScript") {}
 
     void OnBeforeConfigLoad(bool /*reload*/) override
     {
@@ -498,7 +498,7 @@ private:
 
 void AddMorphSummonScripts()
 {
-    new MorphSummon_WorldScript();
-    new MorphSummon_PlayerScript();
-    new MorphSummon_CreatureScript();
+    new MorphSummonWorldScript();
+    new MorphSummonPlayerScript();
+    new MorphSummonCreatureScript();
 }
