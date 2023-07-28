@@ -2,7 +2,7 @@
 
 ## mod-morphsummon
 
-![mod-morphsummon](https://raw.githubusercontent.com/azerothcore/mod-morphsummon/master/.github/icon.png)
+![mod-morphsummon](https://raw.githubusercontent.com/azerothcore/mod-morphsummon/master/icon.png)
 
 - Latest build status with azerothcore:
 
