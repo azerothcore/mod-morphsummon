@@ -2,15 +2,15 @@
  * Copyright (C) 2016+ AzerothCore <www.azerothcore.org>, released under GNU AGPL v3 license: https://github.com/azerothcore/azerothcore-wotlk/blob/master/LICENSE-AGPL3
  */
 
-#include "ScriptMgr.h"
-#include "Player.h"
-#include "Unit.h"
 #include "Chat.h"
 #include "Config.h"
 #include "Pet.h"
-#include "ScriptedGossip.h"
+#include "Player.h"
 #include "ScriptedCreature.h"
+#include "ScriptedGossip.h"
+#include "ScriptMgr.h"
 #include "SpellAuras.h"
+#include "Unit.h"
 
 std::map<std::string, uint32> warlock_imp;
 std::map<std::string, uint32> warlock_voidwalker;
@@ -79,17 +79,18 @@ enum MorphSummonEvents
 class MorphSummonPlayerScript : public PlayerScript
 {
 public:
-    MorphSummonPlayerScript() : PlayerScript("MorphSummonPlayerScript") {}
+    MorphSummonPlayerScript() : PlayerScript("MorphSummonPlayerScript", {
+        PLAYERHOOK_ON_LOGIN,
+        PLAYERHOOK_ON_AFTER_GUARDIAN_INIT_STATS_FOR_LEVEL
+    }) {}
 
-    void OnLogin(Player* player) override
+    void OnPlayerLogin(Player* player) override
     {
         if (morphSummonAnnounce)
-        {
             ChatHandler(player->GetSession()).SendSysMessage("This server is running the |cff4CFF00MorphSummon |rmodule.");
-        }
     }
 
-    void OnAfterGuardianInitStatsForLevel(Player* player, Guardian* guardian) override
+    void OnPlayerAfterGuardianInitStatsForLevel(Player* player, Guardian* guardian) override
     {
         if (Pet* pet = guardian->ToPet())
         {
@@ -126,9 +127,7 @@ public:
         ClearGossipMenuFor(player);
 
         if (action == MORPH_MAIN_MENU)
-        {
             return CreateMainMenu(player, creature);
-        }
 
         if (action == MORPH_CLOSE_MENU)
         {
@@ -137,71 +136,39 @@ public:
         }
 
         if (action >= MORPH_PAGE_START_WARLOCK_IMP && action < MORPH_PAGE_START_WARLOCK_VOIDWALKER)
-        {
             AddGossip(player, action, warlock_imp, MORPH_PAGE_START_WARLOCK_IMP);
-        }
         else if (action >= MORPH_PAGE_START_WARLOCK_VOIDWALKER && action < MORPH_PAGE_START_WARLOCK_SUCCUBUS)
-        {
             AddGossip(player, action, warlock_voidwalker, MORPH_PAGE_START_WARLOCK_VOIDWALKER);
-        }
         else if (action >= MORPH_PAGE_START_WARLOCK_SUCCUBUS && action < MORPH_PAGE_START_WARLOCK_FELHUNTER)
-        {
             AddGossip(player, action, warlock_succubus, MORPH_PAGE_START_WARLOCK_SUCCUBUS);
-        }
         else if (action >= MORPH_PAGE_START_WARLOCK_FELHUNTER && action < MORPH_PAGE_START_WARLOCK_FELGUARD)
-        {
             AddGossip(player, action, warlock_felhunter, MORPH_PAGE_START_WARLOCK_FELHUNTER);
-        }
         else if (action >= MORPH_PAGE_START_WARLOCK_FELGUARD && action < MORPH_PAGE_START_DEATH_KNIGHT_GHOUL)
-        {
             AddGossip(player, action, warlock_felguard, MORPH_PAGE_START_WARLOCK_FELGUARD);
-        }
         else if (action >= MORPH_PAGE_START_DEATH_KNIGHT_GHOUL && action < MORPH_PAGE_START_MAGE_WATER_ELEMENTAL)
-        {
             AddGossip(player, action, death_knight_ghoul, MORPH_PAGE_START_DEATH_KNIGHT_GHOUL);
-        }
         else if (action >= MORPH_PAGE_START_MAGE_WATER_ELEMENTAL && action < MORPH_PAGE_START_FELGUARD_WEAPON)
-        {
             AddGossip(player, action, mage_water_elemental, MORPH_PAGE_START_MAGE_WATER_ELEMENTAL);
-        }
         else if (action >= MORPH_PAGE_START_FELGUARD_WEAPON && action < MORPH_PAGE_MAX)
-        {
             AddGossip(player, action, felguard_weapon, MORPH_PAGE_START_FELGUARD_WEAPON);
-        }
         else if (action >= MORPH_PAGE_MAX)
         {
             if (sender >= MORPH_PAGE_START_WARLOCK_IMP && sender < MORPH_PAGE_START_WARLOCK_VOIDWALKER)
-            {
                 Polymorph(player, action, sender, MORPH_PAGE_START_WARLOCK_IMP, MORPH_PAGE_START_WARLOCK_VOIDWALKER, SUMMON_IMP, warlock_imp, true);
-            }
             else if (sender >= MORPH_PAGE_START_WARLOCK_VOIDWALKER && sender < MORPH_PAGE_START_WARLOCK_SUCCUBUS)
-            {
                 Polymorph(player, action, sender, MORPH_PAGE_START_WARLOCK_VOIDWALKER, MORPH_PAGE_START_WARLOCK_SUCCUBUS, SUMMON_VOIDWALKER, warlock_voidwalker, true);
-            }
             else if (sender >= MORPH_PAGE_START_WARLOCK_SUCCUBUS && sender < MORPH_PAGE_START_WARLOCK_FELHUNTER)
-            {
                 Polymorph(player, action, sender, MORPH_PAGE_START_WARLOCK_SUCCUBUS, MORPH_PAGE_START_WARLOCK_FELHUNTER, SUMMON_SUCCUBUS, warlock_succubus, true);
-            }
             else if (sender >= MORPH_PAGE_START_WARLOCK_FELHUNTER && sender < MORPH_PAGE_START_WARLOCK_FELGUARD)
-            {
                 Polymorph(player, action, sender, MORPH_PAGE_START_WARLOCK_FELHUNTER, MORPH_PAGE_START_WARLOCK_FELGUARD, SUMMON_FELHUNTER, warlock_felhunter, true);
-            }
             else if (sender >= MORPH_PAGE_START_WARLOCK_FELGUARD && sender < MORPH_PAGE_START_DEATH_KNIGHT_GHOUL)
-            {
                 Polymorph(player, action, sender, MORPH_PAGE_START_WARLOCK_FELGUARD, MORPH_PAGE_START_DEATH_KNIGHT_GHOUL, SUMMON_FELGUARD, warlock_felguard, true);
-            }
             else if (sender >= MORPH_PAGE_START_DEATH_KNIGHT_GHOUL && sender < MORPH_PAGE_START_MAGE_WATER_ELEMENTAL)
-            {
                 Polymorph(player, action, sender, MORPH_PAGE_START_DEATH_KNIGHT_GHOUL, MORPH_PAGE_START_MAGE_WATER_ELEMENTAL, RAISE_DEAD, death_knight_ghoul, true);
-            }
             else if (sender >= MORPH_PAGE_START_MAGE_WATER_ELEMENTAL && sender < MORPH_PAGE_START_FELGUARD_WEAPON)
-            {
                 Polymorph(player, action, sender, MORPH_PAGE_START_MAGE_WATER_ELEMENTAL, MORPH_PAGE_START_FELGUARD_WEAPON, SUMMON_WATER_ELEMENTAL, mage_water_elemental, true);
-            }
             else if (sender >= MORPH_PAGE_START_FELGUARD_WEAPON && sender < MORPH_PAGE_MAX)
-            {
                 Polymorph(player, action, sender, MORPH_PAGE_START_FELGUARD_WEAPON, MORPH_PAGE_MAX, SUMMON_FELGUARD, felguard_weapon, false);
-            }
         }
 
         SendGossipMenuFor(player, MORPH_GOSSIP_TEXT_CHOICE, creature->GetGUID());
@@ -264,9 +231,7 @@ private:
                 if (minion->GetUInt32Value(UNIT_CREATED_BY_SPELL) == SUMMON_WATER_ELEMENTAL)
                 {
                     if (!mage_water_elemental.empty())
-                    {
                         AddGossipItemFor(player, MORPH_GOSSIP_MENU_HELLO, MORPH_GOSSIP_OPTION_POLYMORPH, GOSSIP_SENDER_MAIN, MORPH_PAGE_START_MAGE_WATER_ELEMENTAL);
-                    }
                 }
             }
         }
@@ -306,14 +271,10 @@ private:
                         AddGossipItemFor(player, MORPH_GOSSIP_MENU_HELLO, MORPH_GOSSIP_OPTION_POLYMORPH, GOSSIP_SENDER_MAIN, MORPH_PAGE_START_WARLOCK_FELGUARD);
 
                         if (!felguard_weapon.empty())
-                        {
                             AddGossipItemFor(player, MORPH_GOSSIP_MENU_HELLO, MORPH_GOSSIP_OPTION_FELGUARD_WEAPON, GOSSIP_SENDER_MAIN, MORPH_PAGE_START_FELGUARD_WEAPON);
-                        }
                     }
                     else if (!felguard_weapon.empty())
-                    {
                         AddGossipItemFor(player, MORPH_GOSSIP_MENU_HELLO, MORPH_GOSSIP_OPTION_FELGUARD_WEAPON, GOSSIP_SENDER_MAIN, MORPH_PAGE_START_FELGUARD_WEAPON);
-                    }
                     else
                         sorry = true;
                     break;
@@ -328,9 +289,7 @@ private:
                 }
             }
             else
-            {
                 sorry = true;
-            }
         }
 
         if (sorry)
@@ -374,13 +333,9 @@ private:
         Minion* minion = player->GetFirstMinion();
 
         if (pet != nullptr)
-        {
             petOrMinion = pet;
-        }
         else if (minion != nullptr)
-        {
             petOrMinion = minion;
-        }
 
         if (petOrMinion != nullptr)
         {
@@ -422,7 +377,9 @@ private:
 class MorphSummonWorldScript : public WorldScript
 {
 public:
-    MorphSummonWorldScript() : WorldScript("MorphSummonWorldScript") {}
+    MorphSummonWorldScript() : WorldScript("MorphSummonWorldScript", {
+        WORLDHOOK_ON_BEFORE_CONFIG_LOAD
+    }) {}
 
     void OnBeforeConfigLoad(bool /*reload*/) override
     {
@@ -484,9 +441,7 @@ private:
         while (std::getline(modelsStringStream, delimitedValue, ','))
         {
             if (count % 2 == 0)
-            {
                 modelName = delimitedValue;
-            }
             else
             {
                 uint32 modelId = atoi(delimitedValue.c_str());
