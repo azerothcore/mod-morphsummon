@@ -36,4 +36,4 @@ INSERT INTO `gossip_menu_option` (`MenuID`, `OptionID`, `OptionIcon`, `OptionTex
 DELETE FROM `creature_template_model` where `CreatureID` = @ENTRY;
 INSERT INTO `creature_template_model` (`CreatureID`, `Idx`, `CreatureDisplayID`, `DisplayScale`, `Probability`, `VerifiedBuild`) VALUES (@ENTRY, 0, @MODELID, 1, 1, 12340);
 
-UPDATE `creature_template` SET `npcflag`=1 WHERE `entry`=601072;
+UPDATE `creature_template` SET `npcflag`=`npcflag`|1 WHERE `entry`=@ENTRY;
