@@ -196,7 +196,7 @@ public:
             }
 
             events.Reset();
-            events.ScheduleEvent(MORPH_EVENT_CAST_SPELL, urand(minTimeVisualEffect, maxTimeVisualEffect));
+            events.ScheduleEvent(MORPH_EVENT_CAST_SPELL, Milliseconds(urand(minTimeVisualEffect, maxTimeVisualEffect)));
         }
 
         void UpdateAI(uint32 diff) override
@@ -208,7 +208,7 @@ public:
             case MORPH_EVENT_CAST_SPELL:
                 if (!randomVisualEffectSpells.empty())
                     DoCast(me, Acore::Containers::SelectRandomContainerElement(randomVisualEffectSpells), true);
-                events.ScheduleEvent(MORPH_EVENT_CAST_SPELL, urand(minTimeVisualEffect, maxTimeVisualEffect));
+                events.ScheduleEvent(MORPH_EVENT_CAST_SPELL, Milliseconds(urand(minTimeVisualEffect, maxTimeVisualEffect)));
                 break;
             }
         }
