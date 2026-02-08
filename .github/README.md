@@ -58,4 +58,4 @@ If you need to change the module configuration, go to your server configuration 
 AzerothCore: [repository](https://github.com/azerothcore) - [website](http://azerothcore.org/) - [discord chat community](https://discord.gg/gkt4y2x)
 
 ## License
-This code and content is released under the [GNU GPL v2](../LICENSE.md).
+This code and content is released under the [GNU AGPL v3](https://github.com/azerothcore/azerothcore-wotlk/blob/master/LICENSE-AGPL3).
