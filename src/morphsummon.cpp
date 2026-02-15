@@ -152,6 +152,10 @@ public:
                     {
                         pet->SetDisplayId(DISPLAY_ID_FELGUARD);
                         pet->SetNativeDisplayId(DISPLAY_ID_FELGUARD);
+                    }
+
+                    if (pet->GetUInt32Value(UNIT_VIRTUAL_ITEM_SLOT_ID) != ITEM_ID_FELGUARD_WEAPON)
+                    {
                         pet->SetUInt32Value(UNIT_VIRTUAL_ITEM_SLOT_ID, ITEM_ID_FELGUARD_WEAPON);
                     }
                     break;
