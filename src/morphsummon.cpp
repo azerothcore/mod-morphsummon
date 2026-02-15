@@ -23,6 +23,7 @@ std::map<std::string, uint32> death_knight_ghoul;
 std::map<std::string, uint32> mage_water_elemental;
 std::list<uint32> randomVisualEffectSpells;
 std::list<uint32> randomMainHandEquip;
+std::set<uint32> defaultGhoulDisplayIds;
 uint32 minTimeVisualEffect;
 uint32 maxTimeVisualEffect;
 bool morphSummonEnabled;
@@ -70,6 +71,21 @@ enum MorphSummonSpells
     SUMMON_WATER_ELEMENTAL = 70908
 };
 
+enum MorphSummonDefaultIds
+{
+    DISPLAY_ID_IMP = 4449,
+    DISPLAY_ID_VOIDWALKER = 1132,
+    DISPLAY_ID_SUCCUBUS = 4162,
+    DISPLAY_ID_FELHUNTER = 850,
+    DISPLAY_ID_FELGUARD = 14255,
+    DISPLAY_ID_GHOUL1 = 24992,
+    DISPLAY_ID_GHOUL2 = 24993,
+    DISPLAY_ID_GHOUL3 = 24994,
+    DISPLAY_ID_GHOUL4 = 24995,
+    DISPLAY_ID_WATER_ELEMENTAL = 525,
+    ITEM_ID_FELGUARD_WEAPON = 22199
+};
+
 enum MorphEffectSpells
 {
     SUBMERGE = 53421,
@@ -97,12 +113,75 @@ public:
 
     void OnPlayerAfterGuardianInitStatsForLevel(Player* player, Guardian* guardian) override
     {
-        if (Pet* pet = guardian->ToPet(); pet && pet->GetUInt32Value(UNIT_CREATED_BY_SPELL) == SUMMON_FELGUARD)
+        if (Pet* pet = guardian->ToPet())
         {
-            if (QueryResult result = CharacterDatabase.Query("SELECT `FelguardItemID` FROM `mod_morphsummon_felguard_weapon` WHERE `PlayerGUIDLow`={}", player->GetGUID().GetCounter()))
+            if (!morphSummonEnabled)
             {
-                Field* fields = result->Fetch();
-                pet->SetUInt32Value(UNIT_VIRTUAL_ITEM_SLOT_ID, fields[0].Get<uint32>());
+                switch (pet->GetUInt32Value(UNIT_CREATED_BY_SPELL))
+                {
+                case SUMMON_IMP:
+                    if (pet->GetDisplayId() != DISPLAY_ID_IMP)
+                    {
+                        pet->SetDisplayId(DISPLAY_ID_IMP);
+                        pet->SetNativeDisplayId(DISPLAY_ID_IMP);
+                    }
+                    break;
+                case SUMMON_VOIDWALKER:
+                    if (pet->GetDisplayId() != DISPLAY_ID_VOIDWALKER)
+                    {
+                        pet->SetDisplayId(DISPLAY_ID_VOIDWALKER);
+                        pet->SetNativeDisplayId(DISPLAY_ID_VOIDWALKER);
+                    }
+                    break;
+                case SUMMON_SUCCUBUS:
+                    if (pet->GetDisplayId() != DISPLAY_ID_SUCCUBUS)
+                    {
+                        pet->SetDisplayId(DISPLAY_ID_SUCCUBUS);
+                        pet->SetNativeDisplayId(DISPLAY_ID_SUCCUBUS);
+                    }
+                    break;
+                case SUMMON_FELHUNTER:
+                    if (pet->GetDisplayId() != DISPLAY_ID_FELHUNTER)
+                    {
+                        pet->SetDisplayId(DISPLAY_ID_FELHUNTER);
+                        pet->SetNativeDisplayId(DISPLAY_ID_FELHUNTER);
+                    }
+                    break;
+                case SUMMON_FELGUARD:
+                    if (pet->GetDisplayId() != DISPLAY_ID_FELGUARD)
+                    {
+                        pet->SetDisplayId(DISPLAY_ID_FELGUARD);
+                        pet->SetNativeDisplayId(DISPLAY_ID_FELGUARD);
+                        pet->SetUInt32Value(UNIT_VIRTUAL_ITEM_SLOT_ID, ITEM_ID_FELGUARD_WEAPON);
+                    }
+                    break;
+                case RAISE_DEAD:
+                    if (!defaultGhoulDisplayIds.contains(pet->GetDisplayId()))
+                    {
+                        uint32 ghoulDisplayId = Acore::Containers::SelectRandomContainerElement(defaultGhoulDisplayIds);
+                        pet->SetDisplayId(ghoulDisplayId);
+                        pet->SetNativeDisplayId(ghoulDisplayId);
+                    }
+                    break;
+                case SUMMON_WATER_ELEMENTAL:
+                    if (pet->GetDisplayId() != DISPLAY_ID_WATER_ELEMENTAL)
+                    {
+                        pet->SetDisplayId(DISPLAY_ID_WATER_ELEMENTAL);
+                        pet->SetNativeDisplayId(DISPLAY_ID_WATER_ELEMENTAL);
+                    }
+                    break;
+                }
+            }
+            else
+            {
+                if (Pet* pet = guardian->ToPet(); pet && pet->GetUInt32Value(UNIT_CREATED_BY_SPELL) == SUMMON_FELGUARD)
+                {
+                    if (QueryResult result = CharacterDatabase.Query("SELECT `FelguardItemID` FROM `mod_morphsummon_felguard_weapon` WHERE `PlayerGUIDLow`={}", player->GetGUID().GetCounter()))
+                    {
+                        Field* fields = result->Fetch();
+                        pet->SetUInt32Value(UNIT_VIRTUAL_ITEM_SLOT_ID, fields[0].Get<uint32>());
+                    }
+                }
             }
         }
     }
@@ -419,6 +498,14 @@ public:
         morphSummonEnabled = sConfigMgr->GetOption<bool>("MorphSummon.Enabled", true);
         morphSummonAnnounce = sConfigMgr->GetOption<bool>("MorphSummon.Announce", false);
         morphSummonNewNameEnabled = sConfigMgr->GetOption<bool>("MorphSummon.NewNameEnabled", true);
+
+        if (defaultGhoulDisplayIds.empty())
+        {
+            defaultGhoulDisplayIds.emplace(DISPLAY_ID_GHOUL1);
+            defaultGhoulDisplayIds.emplace(DISPLAY_ID_GHOUL2);
+            defaultGhoulDisplayIds.emplace(DISPLAY_ID_GHOUL3);
+            defaultGhoulDisplayIds.emplace(DISPLAY_ID_GHOUL4);
+        }
 
         randomVisualEffectSpells.clear();
         std::stringstream stringStream;
