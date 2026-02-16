@@ -4,6 +4,7 @@
 
 #include "Chat.h"
 #include "Config.h"
+#include "GameTime.h"
 #include "Pet.h"
 #include "Player.h"
 #include "ScriptedCreature.h"
@@ -11,7 +12,6 @@
 #include "ScriptMgr.h"
 #include "SpellAuras.h"
 #include "Unit.h"
-#include "GameTime.h"
 
 std::map<std::string, uint32> warlock_imp;
 std::map<std::string, uint32> warlock_voidwalker;
@@ -155,9 +155,7 @@ public:
                     }
 
                     if (pet->GetUInt32Value(UNIT_VIRTUAL_ITEM_SLOT_ID) != ITEM_ID_FELGUARD_WEAPON)
-                    {
                         pet->SetUInt32Value(UNIT_VIRTUAL_ITEM_SLOT_ID, ITEM_ID_FELGUARD_WEAPON);
-                    }
                     break;
                 case RAISE_DEAD:
                     if (!defaultGhoulDisplayIds.contains(pet->GetDisplayId()))
