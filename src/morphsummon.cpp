@@ -174,6 +174,12 @@ public:
                     break;
                 }
             }
+            else if (pet->GetUInt32Value(UNIT_CREATED_BY_SPELL) == SUMMON_WATER_ELEMENTAL)
+            {
+                // The size of the water elemental model is not automatically scaled, so needs to be done here
+                CreatureDisplayInfoEntry const* displayInfo = sCreatureDisplayInfoStore.LookupEntry(pet->GetNativeDisplayId());
+                pet->SetObjectScale(0.85f / displayInfo->scale);
+            }
             else if (pet->GetUInt32Value(UNIT_CREATED_BY_SPELL) == SUMMON_FELGUARD)
             {
                 if (QueryResult result = CharacterDatabase.Query("SELECT `FelguardItemID` FROM `mod_morphsummon_felguard_weapon` WHERE `PlayerGUIDLow`={}", player->GetGUID().GetCounter()))
@@ -182,6 +188,24 @@ public:
                     pet->SetUInt32Value(UNIT_VIRTUAL_ITEM_SLOT_ID, fields[0].Get<uint32>());
                 }
             }
+        }
+    }
+};
+
+class MorphSummonUnitScript : public UnitScript
+{
+public:
+    MorphSummonUnitScript() : UnitScript("MorphSummonUnitScript", {
+        UNITHOOK_ON_AURA_REMOVE
+    }) {}
+
+    void OnAuraRemove(Unit* unit, AuraApplication* /*aurApp*/, AuraRemoveMode /*mode*/) override
+    {
+        if (Pet* pet = unit->ToPet(); pet && pet->GetOwner() && pet->GetOwner()->IsPlayer() && pet->GetUInt32Value(UNIT_CREATED_BY_SPELL) == SUMMON_WATER_ELEMENTAL)
+        {
+            // The size of the water elemental model is not automatically scaled, so needs to be done here after auras are removed
+            CreatureDisplayInfoEntry const* displayInfo = sCreatureDisplayInfoStore.LookupEntry(pet->GetNativeDisplayId());
+            pet->SetObjectScale(0.85f / displayInfo->scale);
         }
     }
 };
@@ -578,5 +602,6 @@ void AddMorphSummonScripts()
 {
     new MorphSummonWorldScript();
     new MorphSummonPlayerScript();
+    new MorphSummonUnitScript();
     new MorphSummonCreatureScript();
 }
