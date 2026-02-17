@@ -195,9 +195,9 @@ public:
 class MorphSummonUnitScript : public UnitScript
 {
 public:
-    MorphSummonUnitScript() : UnitScript("MorphSummonUnitScript", {
+    MorphSummonUnitScript() : UnitScript("MorphSummonUnitScript",
         UNITHOOK_ON_AURA_REMOVE
-    }) {}
+    ) {}
 
     void OnAuraRemove(Unit* unit, AuraApplication* /*aurApp*/, AuraRemoveMode /*mode*/) override
     {
