@@ -177,8 +177,8 @@ public:
             else if (pet->GetUInt32Value(UNIT_CREATED_BY_SPELL) == SUMMON_WATER_ELEMENTAL)
             {
                 // The size of the water elemental model is not automatically scaled, so needs to be done here
-                CreatureDisplayInfoEntry const* displayInfo = sCreatureDisplayInfoStore.LookupEntry(pet->GetNativeDisplayId());
-                pet->SetObjectScale(0.85f / displayInfo->scale);
+                if (CreatureDisplayInfoEntry const* displayInfo = sCreatureDisplayInfoStore.LookupEntry(pet->GetNativeDisplayId()))
+                    pet->SetObjectScale(0.85f / displayInfo->scale);
             }
             else if (pet->GetUInt32Value(UNIT_CREATED_BY_SPELL) == SUMMON_FELGUARD)
             {
@@ -201,11 +201,14 @@ public:
 
     void OnAuraRemove(Unit* unit, AuraApplication* /*aurApp*/, AuraRemoveMode /*mode*/) override
     {
+        if (!morphSummonEnabled)
+            return;
+
         if (Pet* pet = unit->ToPet(); pet && pet->GetOwner() && pet->GetOwner()->IsPlayer() && pet->GetUInt32Value(UNIT_CREATED_BY_SPELL) == SUMMON_WATER_ELEMENTAL)
         {
             // The size of the water elemental model is not automatically scaled, so needs to be done here after auras are removed
-            CreatureDisplayInfoEntry const* displayInfo = sCreatureDisplayInfoStore.LookupEntry(pet->GetNativeDisplayId());
-            pet->SetObjectScale(0.85f / displayInfo->scale);
+            if (CreatureDisplayInfoEntry const* displayInfo = sCreatureDisplayInfoStore.LookupEntry(pet->GetNativeDisplayId()))
+                pet->SetObjectScale(0.85f / displayInfo->scale);
         }
     }
 };
