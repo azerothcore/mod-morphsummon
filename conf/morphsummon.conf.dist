@@ -14,7 +14,7 @@ MorphSummon.Announce = 0
 
 # Allow new name for demons and ghouls
 
-MorphSummon.NewNameEnabled = 1
+MorphSummon.NewNameEnabled = 0
 
 # Model IDs for the summoned permanent creatures
 

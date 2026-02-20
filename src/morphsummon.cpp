@@ -523,7 +523,7 @@ public:
     {
         morphSummonEnabled = sConfigMgr->GetOption<bool>("MorphSummon.Enabled", true);
         morphSummonAnnounce = sConfigMgr->GetOption<bool>("MorphSummon.Announce", false);
-        morphSummonNewNameEnabled = sConfigMgr->GetOption<bool>("MorphSummon.NewNameEnabled", true);
+        morphSummonNewNameEnabled = sConfigMgr->GetOption<bool>("MorphSummon.NewNameEnabled", false);
 
         if (defaultGhoulDisplayIds.empty())
         {
