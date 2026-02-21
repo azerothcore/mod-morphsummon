@@ -411,8 +411,13 @@ private:
                         AddGossipItemFor(player, MORPH_GOSSIP_MENU_HELLO, MORPH_GOSSIP_OPTION_POLYMORPH, GOSSIP_SENDER_MAIN, MORPH_PAGE_START_DEATH_KNIGHT_GHOUL);
                     }
                     break;
+                default:
+                    showNewName = false;
+                    break;
                 }
             }
+            else
+                showNewName = false;
         }
 
         if (showPolymorph || showNewName)
@@ -455,35 +460,26 @@ private:
 
     void Polymorph(Player *player, uint32 action, uint32 sender, uint32 startPage, uint32 maxPage, uint32 spell, std::map<std::string, uint32> &modelMap, bool polymorphPet)
     {
-        Creature* petOrMinion = nullptr;
-        Pet* pet = player->GetPet();
-        Minion* minion = player->GetFirstMinion();
-
-        if (pet != nullptr)
-            petOrMinion = pet;
-        else if (minion != nullptr)
-            petOrMinion = minion;
-
-        if (petOrMinion != nullptr)
+        if (Pet* pet = player->GetPet())
         {
             if (sender >= startPage && sender < maxPage)
             {
-                if (petOrMinion->GetUInt32Value(UNIT_CREATED_BY_SPELL) == spell)
+                if (pet->GetUInt32Value(UNIT_CREATED_BY_SPELL) == spell)
                 {
                     uint32 morphId = action - MORPH_PAGE_MAX;
 
                     if (polymorphPet)
                     {
-                        petOrMinion->SetDisplayId(morphId);
-                        petOrMinion->SetNativeDisplayId(morphId);
+                        pet->SetDisplayId(morphId);
+                        pet->SetNativeDisplayId(morphId);
 
-                        if (Aura *aura = petOrMinion->AddAura(SUBMERGE, pet))
+                        if (Aura *aura = pet->AddAura(SUBMERGE, pet))
                             aura->SetDuration(2000);
-                        petOrMinion->CastSpell(pet, SHADOW_SUMMON_VISUAL, true);
+                        pet->CastSpell(pet, SHADOW_SUMMON_VISUAL, true);
                     }
                     else
                     {
-                        petOrMinion->SetUInt32Value(UNIT_VIRTUAL_ITEM_SLOT_ID, morphId);
+                        pet->SetUInt32Value(UNIT_VIRTUAL_ITEM_SLOT_ID, morphId);
                         CharacterDatabase.Execute("REPLACE INTO `mod_morphsummon_felguard_weapon` (`PlayerGUIDLow`, `FelguardItemID`) VALUES ({}, {})", player->GetGUID().GetCounter(), morphId);
                     }
                 }
