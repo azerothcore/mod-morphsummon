@@ -335,8 +335,8 @@ public:
 private:
     bool CreateMainMenu(Player* player, Creature* creature)
     {
-        bool sorry = true;
-        bool showNewName = true;
+        bool showPolymorph = false;
+        bool showNewName = morphSummonNewNameEnabled;
 
         // Mage Pet (minion)
         if (player->getClass() == CLASS_MAGE)
@@ -349,7 +349,7 @@ private:
                 {
                     if (!mage_water_elemental.empty())
                     {
-                        sorry = false;
+                        showPolymorph = true;
                         AddGossipItemFor(player, MORPH_GOSSIP_MENU_HELLO, MORPH_GOSSIP_OPTION_POLYMORPH, GOSSIP_SENDER_MAIN, MORPH_PAGE_START_MAGE_WATER_ELEMENTAL);
                     }
                 }
@@ -364,35 +364,35 @@ private:
                 case SUMMON_IMP:
                     if (!warlock_imp.empty())
                     {
-                        sorry = false;
+                        showPolymorph = true;
                         AddGossipItemFor(player, MORPH_GOSSIP_MENU_HELLO, MORPH_GOSSIP_OPTION_POLYMORPH, GOSSIP_SENDER_MAIN, MORPH_PAGE_START_WARLOCK_IMP);
                     }
                     break;
                 case SUMMON_VOIDWALKER:
                     if (!warlock_voidwalker.empty())
                     {
-                        sorry = false;
+                        showPolymorph = true;
                         AddGossipItemFor(player, MORPH_GOSSIP_MENU_HELLO, MORPH_GOSSIP_OPTION_POLYMORPH, GOSSIP_SENDER_MAIN, MORPH_PAGE_START_WARLOCK_VOIDWALKER);
                     }
                     break;
                 case SUMMON_SUCCUBUS:
                     if (!warlock_succubus.empty())
                     {
-                        sorry = false;
+                        showPolymorph = true;
                         AddGossipItemFor(player, MORPH_GOSSIP_MENU_HELLO, MORPH_GOSSIP_OPTION_POLYMORPH, GOSSIP_SENDER_MAIN, MORPH_PAGE_START_WARLOCK_SUCCUBUS);
                     }
                     break;
                 case SUMMON_FELHUNTER:
                     if (!warlock_felhunter.empty())
                     {
-                        sorry = false;
+                        showPolymorph = true;
                         AddGossipItemFor(player, MORPH_GOSSIP_MENU_HELLO, MORPH_GOSSIP_OPTION_POLYMORPH, GOSSIP_SENDER_MAIN, MORPH_PAGE_START_WARLOCK_FELHUNTER);
                     }
                     break;
                 case SUMMON_FELGUARD:
                     if (!warlock_felguard.empty())
                     {
-                        sorry = false;
+                        showPolymorph = true;
                         AddGossipItemFor(player, MORPH_GOSSIP_MENU_HELLO, MORPH_GOSSIP_OPTION_POLYMORPH, GOSSIP_SENDER_MAIN, MORPH_PAGE_START_WARLOCK_FELGUARD);
 
                         if (!felguard_weapon.empty())
@@ -400,14 +400,14 @@ private:
                     }
                     else if (!felguard_weapon.empty())
                     {
-                        sorry = false;
+                        showPolymorph = true;
                         AddGossipItemFor(player, MORPH_GOSSIP_MENU_HELLO, MORPH_GOSSIP_OPTION_FELGUARD_WEAPON, GOSSIP_SENDER_MAIN, MORPH_PAGE_START_FELGUARD_WEAPON);
                     }
                     break;
                 case RAISE_DEAD:
                     if (!death_knight_ghoul.empty())
                     {
-                        sorry = false;
+                        showPolymorph = true;
                         AddGossipItemFor(player, MORPH_GOSSIP_MENU_HELLO, MORPH_GOSSIP_OPTION_POLYMORPH, GOSSIP_SENDER_MAIN, MORPH_PAGE_START_DEATH_KNIGHT_GHOUL);
                     }
                     break;
@@ -415,17 +415,16 @@ private:
             }
         }
 
-        if (sorry)
+        if (showPolymorph || showNewName)
         {
-            AddGossipItemFor(player, MORPH_GOSSIP_MENU_SORRY, MORPH_GOSSIP_OPTION_SORRY, GOSSIP_SENDER_MAIN, MORPH_CLOSE_MENU);
-            SendGossipMenuFor(player, MORPH_GOSSIP_TEXT_SORRY, creature->GetGUID());
+            if (showNewName)
+                AddGossipItemFor(player, MORPH_GOSSIP_MENU_HELLO, MORPH_GOSSIP_OPTION_NEW_NAME, GOSSIP_SENDER_MAIN, MORPH_NEW_NAME);
+            SendGossipMenuFor(player, MORPH_GOSSIP_TEXT_HELLO, creature->GetGUID());
         }
         else
         {
-            if (showNewName && morphSummonNewNameEnabled)
-                AddGossipItemFor(player, MORPH_GOSSIP_MENU_HELLO, MORPH_GOSSIP_OPTION_NEW_NAME, GOSSIP_SENDER_MAIN, MORPH_NEW_NAME);
-
-            SendGossipMenuFor(player, MORPH_GOSSIP_TEXT_HELLO, creature->GetGUID());
+            AddGossipItemFor(player, MORPH_GOSSIP_MENU_SORRY, MORPH_GOSSIP_OPTION_SORRY, GOSSIP_SENDER_MAIN, MORPH_CLOSE_MENU);
+            SendGossipMenuFor(player, MORPH_GOSSIP_TEXT_SORRY, creature->GetGUID());
         }
 
         return true;
@@ -498,11 +497,11 @@ private:
     {
         if (Pet* pet = player->GetPet())
         {
-            std::string new_name = sObjectMgr->GeneratePetName(pet->GetEntry());
+            std::string newName = sObjectMgr->GeneratePetName(pet->GetEntry());
 
-            if (!new_name.empty())
+            if (!newName.empty())
             {
-                pet->SetName(new_name);
+                pet->SetName(newName);
                 pet->SetUInt32Value(UNIT_FIELD_PET_NAME_TIMESTAMP, uint32(GameTime::GetGameTime().count()));
 
                 if (player->GetGroup())
