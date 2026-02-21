@@ -338,14 +338,13 @@ private:
         bool showPolymorph = false;
         bool showNewName = morphSummonNewNameEnabled;
 
-        // Mage Pet (minion)
-        if (player->getClass() == CLASS_MAGE)
+        if (Pet* pet = player->GetPet())
         {
-            showNewName = false;
-
-            if (Minion* minion = player->GetFirstMinion())
+            if (player->getClass() == CLASS_MAGE)
             {
-                if (minion->GetUInt32Value(UNIT_CREATED_BY_SPELL) == SUMMON_WATER_ELEMENTAL)
+                showNewName = false;
+
+                if (pet->GetUInt32Value(UNIT_CREATED_BY_SPELL) == SUMMON_WATER_ELEMENTAL)
                 {
                     if (!mage_water_elemental.empty())
                     {
@@ -354,10 +353,7 @@ private:
                     }
                 }
             }
-        }
-        else
-        {
-            if (Pet* pet = player->GetPet())
+            else
             {
                 switch (pet->GetUInt32Value(UNIT_CREATED_BY_SPELL))
                 {
@@ -416,9 +412,9 @@ private:
                     break;
                 }
             }
-            else
-                showNewName = false;
         }
+        else
+            showNewName = false;
 
         if (showPolymorph || showNewName)
         {
