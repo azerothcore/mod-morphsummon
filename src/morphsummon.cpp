@@ -201,10 +201,10 @@ public:
 
     void OnAuraRemove(Unit* unit, AuraApplication* /*aurApp*/, AuraRemoveMode /*mode*/) override
     {
-        if (!morphSummonEnabled)
+        if (!morphSummonEnabled || unit->GetUInt32Value(UNIT_CREATED_BY_SPELL) != SUMMON_WATER_ELEMENTAL)
             return;
 
-        if (Pet* pet = unit->ToPet(); pet && pet->GetOwner() && pet->GetOwner()->IsPlayer() && pet->GetUInt32Value(UNIT_CREATED_BY_SPELL) == SUMMON_WATER_ELEMENTAL)
+        if (Pet* pet = unit->ToPet(); pet && pet->GetOwner() && pet->GetOwner()->IsPlayer())
         {
             // The size of the water elemental model is not automatically scaled, so needs to be done here after auras are removed
             if (CreatureDisplayInfoEntry const* displayInfo = sCreatureDisplayInfoStore.LookupEntry(pet->GetNativeDisplayId()))
@@ -489,15 +489,27 @@ private:
     {
         if (Pet* pet = player->GetPet())
         {
-            std::string newName = sObjectMgr->GeneratePetName(pet->GetEntry());
-
-            if (!newName.empty())
+            switch (pet->GetUInt32Value(UNIT_CREATED_BY_SPELL))
             {
-                pet->SetName(newName);
-                pet->SetUInt32Value(UNIT_FIELD_PET_NAME_TIMESTAMP, uint32(GameTime::GetGameTime().count()));
+            case SUMMON_IMP:
+            case SUMMON_VOIDWALKER:
+            case SUMMON_SUCCUBUS:
+            case SUMMON_FELHUNTER:
+            case SUMMON_FELGUARD:
+            case RAISE_DEAD:
+                {
+                    std::string newName = sObjectMgr->GeneratePetName(pet->GetEntry());
 
-                if (player->GetGroup())
-                    player->SetGroupUpdateFlag(GROUP_UPDATE_FLAG_PET_NAME);
+                    if (!newName.empty())
+                    {
+                        pet->SetName(newName);
+                        pet->SetUInt32Value(UNIT_FIELD_PET_NAME_TIMESTAMP, uint32(GameTime::GetGameTime().count()));
+
+                        if (player->GetGroup())
+                            player->SetGroupUpdateFlag(GROUP_UPDATE_FLAG_PET_NAME);
+                    }
+                }
+                break;
             }
         }
     }
