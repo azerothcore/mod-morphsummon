@@ -4,6 +4,7 @@
 
 #include "Chat.h"
 #include "Config.h"
+#include "GameTime.h"
 #include "Pet.h"
 #include "Player.h"
 #include "ScriptedCreature.h"
@@ -22,9 +23,12 @@ std::map<std::string, uint32> death_knight_ghoul;
 std::map<std::string, uint32> mage_water_elemental;
 std::list<uint32> randomVisualEffectSpells;
 std::list<uint32> randomMainHandEquip;
+std::set<uint32> defaultGhoulDisplayIds;
 uint32 minTimeVisualEffect;
 uint32 maxTimeVisualEffect;
+bool morphSummonEnabled;
 bool morphSummonAnnounce;
+bool morphSummonNewNameEnabled;
 
 enum MorphSummonGossip
 {
@@ -40,6 +44,7 @@ enum MorphSummonGossip
     MORPH_PAGE_MAX = 901,
     MORPH_MAIN_MENU = 50,
     MORPH_CLOSE_MENU = 60,
+    MORPH_NEW_NAME = 70,
     MORPH_GOSSIP_TEXT_HELLO = 601072,
     MORPH_GOSSIP_TEXT_SORRY = 601073,
     MORPH_GOSSIP_TEXT_CHOICE = 601074,
@@ -48,6 +53,7 @@ enum MorphSummonGossip
     MORPH_GOSSIP_MENU_CHOICE = 61074,
     MORPH_GOSSIP_OPTION_POLYMORPH = 0,
     MORPH_GOSSIP_OPTION_FELGUARD_WEAPON = 1,
+    MORPH_GOSSIP_OPTION_NEW_NAME = 2,
     MORPH_GOSSIP_OPTION_SORRY = 0,
     MORPH_GOSSIP_OPTION_CHOICE_BACK = 0,
     MORPH_GOSSIP_OPTION_CHOICE_NEXT = 1,
@@ -62,7 +68,22 @@ enum MorphSummonSpells
     SUMMON_FELHUNTER = 691,
     SUMMON_FELGUARD = 30146,
     RAISE_DEAD = 52150,
-    SUMMON_WATER_ELEMENTAL = 70907
+    SUMMON_WATER_ELEMENTAL = 70908
+};
+
+enum MorphSummonDefaultIds
+{
+    DISPLAY_ID_IMP = 4449,
+    DISPLAY_ID_VOIDWALKER = 1132,
+    DISPLAY_ID_SUCCUBUS = 4162,
+    DISPLAY_ID_FELHUNTER = 850,
+    DISPLAY_ID_FELGUARD = 14255,
+    DISPLAY_ID_GHOUL1 = 24992,
+    DISPLAY_ID_GHOUL2 = 24993,
+    DISPLAY_ID_GHOUL3 = 24994,
+    DISPLAY_ID_GHOUL4 = 24995,
+    DISPLAY_ID_WATER_ELEMENTAL = 525,
+    ITEM_ID_FELGUARD_WEAPON = 22199
 };
 
 enum MorphEffectSpells
@@ -86,7 +107,7 @@ public:
 
     void OnPlayerLogin(Player* player) override
     {
-        if (morphSummonAnnounce)
+        if (morphSummonEnabled && morphSummonAnnounce)
             ChatHandler(player->GetSession()).SendSysMessage("This server is running the |cff4CFF00MorphSummon |rmodule.");
     }
 
@@ -94,11 +115,70 @@ public:
     {
         if (Pet* pet = guardian->ToPet())
         {
-            if (pet->GetUInt32Value(UNIT_CREATED_BY_SPELL) == SUMMON_WATER_ELEMENTAL)
+            if (!morphSummonEnabled)
+            {
+                switch (pet->GetUInt32Value(UNIT_CREATED_BY_SPELL))
+                {
+                case SUMMON_IMP:
+                    if (pet->GetDisplayId() != DISPLAY_ID_IMP)
+                    {
+                        pet->SetDisplayId(DISPLAY_ID_IMP);
+                        pet->SetNativeDisplayId(DISPLAY_ID_IMP);
+                    }
+                    break;
+                case SUMMON_VOIDWALKER:
+                    if (pet->GetDisplayId() != DISPLAY_ID_VOIDWALKER)
+                    {
+                        pet->SetDisplayId(DISPLAY_ID_VOIDWALKER);
+                        pet->SetNativeDisplayId(DISPLAY_ID_VOIDWALKER);
+                    }
+                    break;
+                case SUMMON_SUCCUBUS:
+                    if (pet->GetDisplayId() != DISPLAY_ID_SUCCUBUS)
+                    {
+                        pet->SetDisplayId(DISPLAY_ID_SUCCUBUS);
+                        pet->SetNativeDisplayId(DISPLAY_ID_SUCCUBUS);
+                    }
+                    break;
+                case SUMMON_FELHUNTER:
+                    if (pet->GetDisplayId() != DISPLAY_ID_FELHUNTER)
+                    {
+                        pet->SetDisplayId(DISPLAY_ID_FELHUNTER);
+                        pet->SetNativeDisplayId(DISPLAY_ID_FELHUNTER);
+                    }
+                    break;
+                case SUMMON_FELGUARD:
+                    if (pet->GetDisplayId() != DISPLAY_ID_FELGUARD)
+                    {
+                        pet->SetDisplayId(DISPLAY_ID_FELGUARD);
+                        pet->SetNativeDisplayId(DISPLAY_ID_FELGUARD);
+                    }
+
+                    if (pet->GetUInt32Value(UNIT_VIRTUAL_ITEM_SLOT_ID) != ITEM_ID_FELGUARD_WEAPON)
+                        pet->SetUInt32Value(UNIT_VIRTUAL_ITEM_SLOT_ID, ITEM_ID_FELGUARD_WEAPON);
+                    break;
+                case RAISE_DEAD:
+                    if (!defaultGhoulDisplayIds.contains(pet->GetDisplayId()))
+                    {
+                        uint32 ghoulDisplayId = Acore::Containers::SelectRandomContainerElement(defaultGhoulDisplayIds);
+                        pet->SetDisplayId(ghoulDisplayId);
+                        pet->SetNativeDisplayId(ghoulDisplayId);
+                    }
+                    break;
+                case SUMMON_WATER_ELEMENTAL:
+                    if (pet->GetDisplayId() != DISPLAY_ID_WATER_ELEMENTAL)
+                    {
+                        pet->SetDisplayId(DISPLAY_ID_WATER_ELEMENTAL);
+                        pet->SetNativeDisplayId(DISPLAY_ID_WATER_ELEMENTAL);
+                    }
+                    break;
+                }
+            }
+            else if (pet->GetUInt32Value(UNIT_CREATED_BY_SPELL) == SUMMON_WATER_ELEMENTAL)
             {
                 // The size of the water elemental model is not automatically scaled, so needs to be done here
-                CreatureDisplayInfoEntry const* displayInfo = sCreatureDisplayInfoStore.LookupEntry(pet->GetNativeDisplayId());
-                pet->SetObjectScale(0.85f / displayInfo->scale);
+                if (CreatureDisplayInfoEntry const* displayInfo = sCreatureDisplayInfoStore.LookupEntry(pet->GetNativeDisplayId()))
+                    pet->SetObjectScale(0.85f / displayInfo->scale);
             }
             else if (pet->GetUInt32Value(UNIT_CREATED_BY_SPELL) == SUMMON_FELGUARD)
             {
@@ -112,6 +192,27 @@ public:
     }
 };
 
+class MorphSummonUnitScript : public UnitScript
+{
+public:
+    MorphSummonUnitScript() : UnitScript("MorphSummonUnitScript", true, {
+        UNITHOOK_ON_AURA_REMOVE
+    }) {}
+
+    void OnAuraRemove(Unit* unit, AuraApplication* /*aurApp*/, AuraRemoveMode /*mode*/) override
+    {
+        if (!morphSummonEnabled || unit->GetUInt32Value(UNIT_CREATED_BY_SPELL) != SUMMON_WATER_ELEMENTAL)
+            return;
+
+        if (Pet* pet = unit->ToPet(); pet && pet->GetOwner() && pet->GetOwner()->IsPlayer())
+        {
+            // The size of the water elemental model is not automatically scaled, so needs to be done here after auras are removed
+            if (CreatureDisplayInfoEntry const* displayInfo = sCreatureDisplayInfoStore.LookupEntry(pet->GetNativeDisplayId()))
+                pet->SetObjectScale(0.85f / displayInfo->scale);
+        }
+    }
+};
+
 class MorphSummonCreatureScript : public CreatureScript
 {
 public:
@@ -119,11 +220,17 @@ public:
 
     bool OnGossipHello(Player* player, Creature* creature) override
     {
+        if (!morphSummonEnabled)
+            return true;
+
         return CreateMainMenu(player, creature);
     }
 
     bool OnGossipSelect(Player* player, Creature* creature, uint32 sender, uint32 action) override
     {
+        if (!morphSummonEnabled)
+            return true;
+
         ClearGossipMenuFor(player);
 
         if (action == MORPH_MAIN_MENU)
@@ -133,6 +240,12 @@ public:
         {
             CloseGossipMenuFor(player);
             return true;
+        }
+
+        if (morphSummonNewNameEnabled && action == MORPH_NEW_NAME)
+        {
+            GenerateNewName(player);
+            return CreateMainMenu(player, creature);
         }
 
         if (action >= MORPH_PAGE_START_WARLOCK_IMP && action < MORPH_PAGE_START_WARLOCK_VOIDWALKER)
@@ -222,83 +335,99 @@ public:
 private:
     bool CreateMainMenu(Player* player, Creature* creature)
     {
-        bool sorry = false;
+        bool showPolymorph = false;
+        bool showNewName = morphSummonNewNameEnabled;
 
-        // Mage Pet (minion)
-        if (player->getClass() == CLASS_MAGE) {
-            if (Minion* minion = player->GetFirstMinion())
+        if (Pet* pet = player->GetPet())
+        {
+            if (player->getClass() == CLASS_MAGE)
             {
-                if (minion->GetUInt32Value(UNIT_CREATED_BY_SPELL) == SUMMON_WATER_ELEMENTAL)
+                showNewName = false;
+
+                if (pet->GetUInt32Value(UNIT_CREATED_BY_SPELL) == SUMMON_WATER_ELEMENTAL)
                 {
                     if (!mage_water_elemental.empty())
+                    {
+                        showPolymorph = true;
                         AddGossipItemFor(player, MORPH_GOSSIP_MENU_HELLO, MORPH_GOSSIP_OPTION_POLYMORPH, GOSSIP_SENDER_MAIN, MORPH_PAGE_START_MAGE_WATER_ELEMENTAL);
+                    }
                 }
             }
-        }
-        else
-        {
-            if (Pet* pet = player->GetPet())
+            else
             {
                 switch (pet->GetUInt32Value(UNIT_CREATED_BY_SPELL))
                 {
                 case SUMMON_IMP:
                     if (!warlock_imp.empty())
+                    {
+                        showPolymorph = true;
                         AddGossipItemFor(player, MORPH_GOSSIP_MENU_HELLO, MORPH_GOSSIP_OPTION_POLYMORPH, GOSSIP_SENDER_MAIN, MORPH_PAGE_START_WARLOCK_IMP);
-                    else
-                        sorry = true;
+                    }
                     break;
                 case SUMMON_VOIDWALKER:
                     if (!warlock_voidwalker.empty())
+                    {
+                        showPolymorph = true;
                         AddGossipItemFor(player, MORPH_GOSSIP_MENU_HELLO, MORPH_GOSSIP_OPTION_POLYMORPH, GOSSIP_SENDER_MAIN, MORPH_PAGE_START_WARLOCK_VOIDWALKER);
-                    else
-                        sorry = true;
+                    }
                     break;
                 case SUMMON_SUCCUBUS:
                     if (!warlock_succubus.empty())
+                    {
+                        showPolymorph = true;
                         AddGossipItemFor(player, MORPH_GOSSIP_MENU_HELLO, MORPH_GOSSIP_OPTION_POLYMORPH, GOSSIP_SENDER_MAIN, MORPH_PAGE_START_WARLOCK_SUCCUBUS);
-                    else
-                        sorry = true;
+                    }
                     break;
                 case SUMMON_FELHUNTER:
                     if (!warlock_felhunter.empty())
+                    {
+                        showPolymorph = true;
                         AddGossipItemFor(player, MORPH_GOSSIP_MENU_HELLO, MORPH_GOSSIP_OPTION_POLYMORPH, GOSSIP_SENDER_MAIN, MORPH_PAGE_START_WARLOCK_FELHUNTER);
-                    else
-                        sorry = true;
+                    }
                     break;
                 case SUMMON_FELGUARD:
                     if (!warlock_felguard.empty())
                     {
+                        showPolymorph = true;
                         AddGossipItemFor(player, MORPH_GOSSIP_MENU_HELLO, MORPH_GOSSIP_OPTION_POLYMORPH, GOSSIP_SENDER_MAIN, MORPH_PAGE_START_WARLOCK_FELGUARD);
 
                         if (!felguard_weapon.empty())
                             AddGossipItemFor(player, MORPH_GOSSIP_MENU_HELLO, MORPH_GOSSIP_OPTION_FELGUARD_WEAPON, GOSSIP_SENDER_MAIN, MORPH_PAGE_START_FELGUARD_WEAPON);
                     }
                     else if (!felguard_weapon.empty())
+                    {
+                        showPolymorph = true;
                         AddGossipItemFor(player, MORPH_GOSSIP_MENU_HELLO, MORPH_GOSSIP_OPTION_FELGUARD_WEAPON, GOSSIP_SENDER_MAIN, MORPH_PAGE_START_FELGUARD_WEAPON);
-                    else
-                        sorry = true;
+                    }
                     break;
                 case RAISE_DEAD:
                     if (!death_knight_ghoul.empty())
+                    {
+                        showPolymorph = true;
                         AddGossipItemFor(player, MORPH_GOSSIP_MENU_HELLO, MORPH_GOSSIP_OPTION_POLYMORPH, GOSSIP_SENDER_MAIN, MORPH_PAGE_START_DEATH_KNIGHT_GHOUL);
-                    else
-                        sorry = true;
+                    }
                     break;
                 default:
-                    sorry = true;
+                    showNewName = false;
+                    break;
                 }
             }
-            else
-                sorry = true;
         }
+        else
+            showNewName = false;
 
-        if (sorry)
+        if (showPolymorph || showNewName)
+        {
+            if (showNewName)
+                AddGossipItemFor(player, MORPH_GOSSIP_MENU_HELLO, MORPH_GOSSIP_OPTION_NEW_NAME, GOSSIP_SENDER_MAIN, MORPH_NEW_NAME);
+
+            SendGossipMenuFor(player, MORPH_GOSSIP_TEXT_HELLO, creature->GetGUID());
+        }
+        else
         {
             AddGossipItemFor(player, MORPH_GOSSIP_MENU_SORRY, MORPH_GOSSIP_OPTION_SORRY, GOSSIP_SENDER_MAIN, MORPH_CLOSE_MENU);
             SendGossipMenuFor(player, MORPH_GOSSIP_TEXT_SORRY, creature->GetGUID());
         }
-        else
-            SendGossipMenuFor(player, MORPH_GOSSIP_TEXT_HELLO, creature->GetGUID());
 
         return true;
     }
@@ -328,48 +457,61 @@ private:
 
     void Polymorph(Player *player, uint32 action, uint32 sender, uint32 startPage, uint32 maxPage, uint32 spell, std::map<std::string, uint32> &modelMap, bool polymorphPet)
     {
-        Creature* petOrMinion = nullptr;
-        Pet* pet = player->GetPet();
-        Minion* minion = player->GetFirstMinion();
-
-        if (pet != nullptr)
-            petOrMinion = pet;
-        else if (minion != nullptr)
-            petOrMinion = minion;
-
-        if (petOrMinion != nullptr)
+        if (Pet* pet = player->GetPet())
         {
             if (sender >= startPage && sender < maxPage)
             {
-                if (petOrMinion->GetUInt32Value(UNIT_CREATED_BY_SPELL) == spell)
+                if (pet->GetUInt32Value(UNIT_CREATED_BY_SPELL) == spell)
                 {
                     uint32 morphId = action - MORPH_PAGE_MAX;
 
                     if (polymorphPet)
                     {
-                        petOrMinion->SetDisplayId(morphId);
-                        petOrMinion->SetNativeDisplayId(morphId);
+                        pet->SetDisplayId(morphId);
+                        pet->SetNativeDisplayId(morphId);
 
-                        if (petOrMinion->GetUInt32Value(UNIT_CREATED_BY_SPELL) == SUMMON_WATER_ELEMENTAL)
-                        {
-                            // The size of the water elemental model is not automatically scaled, so needs to be done here
-                            CreatureDisplayInfoEntry const* displayInfo = sCreatureDisplayInfoStore.LookupEntry(petOrMinion->GetNativeDisplayId());
-                            petOrMinion->SetObjectScale(0.85f / displayInfo->scale);
-                        }
-
-                        if (Aura *aura = petOrMinion->AddAura(SUBMERGE, pet))
+                        if (Aura *aura = pet->AddAura(SUBMERGE, pet))
                             aura->SetDuration(2000);
-                        petOrMinion->CastSpell(pet, SHADOW_SUMMON_VISUAL, true);
+                        pet->CastSpell(pet, SHADOW_SUMMON_VISUAL, true);
                     }
                     else
                     {
-                        petOrMinion->SetUInt32Value(UNIT_VIRTUAL_ITEM_SLOT_ID, morphId);
+                        pet->SetUInt32Value(UNIT_VIRTUAL_ITEM_SLOT_ID, morphId);
                         CharacterDatabase.Execute("REPLACE INTO `mod_morphsummon_felguard_weapon` (`PlayerGUIDLow`, `FelguardItemID`) VALUES ({}, {})", player->GetGUID().GetCounter(), morphId);
                     }
                 }
             }
 
             AddGossip(player, sender, modelMap, startPage);
+        }
+    }
+
+    void GenerateNewName(Player* player)
+    {
+        if (Pet* pet = player->GetPet())
+        {
+            switch (pet->GetUInt32Value(UNIT_CREATED_BY_SPELL))
+            {
+            case SUMMON_IMP:
+            case SUMMON_VOIDWALKER:
+            case SUMMON_SUCCUBUS:
+            case SUMMON_FELHUNTER:
+            case SUMMON_FELGUARD:
+            case RAISE_DEAD:
+                {
+                    std::string newName = sObjectMgr->GeneratePetName(pet->GetEntry());
+
+                    if (!newName.empty())
+                    {
+                        pet->SetName(newName);
+                        pet->SetUInt32Value(UNIT_FIELD_PET_NAME_TIMESTAMP, uint32(GameTime::GetGameTime().count()));
+
+                        if (player->GetGroup())
+                            player->SetGroupUpdateFlag(GROUP_UPDATE_FLAG_PET_NAME);
+                    }
+                }
+                break;
+            }
         }
     }
 };
@@ -383,7 +525,17 @@ public:
 
     void OnBeforeConfigLoad(bool /*reload*/) override
     {
-        morphSummonAnnounce = sConfigMgr->GetOption<bool>("MorphSummon.Announce", true);
+        morphSummonEnabled = sConfigMgr->GetOption<bool>("MorphSummon.Enabled", true);
+        morphSummonAnnounce = sConfigMgr->GetOption<bool>("MorphSummon.Announce", false);
+        morphSummonNewNameEnabled = sConfigMgr->GetOption<bool>("MorphSummon.NewNameEnabled", false);
+
+        if (defaultGhoulDisplayIds.empty())
+        {
+            defaultGhoulDisplayIds.emplace(DISPLAY_ID_GHOUL1);
+            defaultGhoulDisplayIds.emplace(DISPLAY_ID_GHOUL2);
+            defaultGhoulDisplayIds.emplace(DISPLAY_ID_GHOUL3);
+            defaultGhoulDisplayIds.emplace(DISPLAY_ID_GHOUL4);
+        }
 
         randomVisualEffectSpells.clear();
         std::stringstream stringStream;
@@ -457,5 +609,6 @@ void AddMorphSummonScripts()
 {
     new MorphSummonWorldScript();
     new MorphSummonPlayerScript();
+    new MorphSummonUnitScript();
     new MorphSummonCreatureScript();
 }

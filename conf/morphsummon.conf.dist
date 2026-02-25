@@ -4,9 +4,17 @@
 #    mod-morphsummon configuration
 #####################################
 
+# Enable or disable the module
+
+MorphSummon.Enabled = 1
+
 # Announce the module when the player logs in?
 
 MorphSummon.Announce = 0
+
+# Allow new name for demons and ghouls
+
+MorphSummon.NewNameEnabled = 0
 
 # Model IDs for the summoned permanent creatures
 
